@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Notificações - DNA Manutenção</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="user-info">
+                Olá, {{ usuario }} (Matrícula: {{ matricula }})!
+            </div>
+            <ul>
+                <li><a href="{{ url_for('painel') }}">Início</a></li>
+                <li><a href="{{ url_for('editor_produto') }}">Estoque</a></li>
+                <li><a href="{{ url_for('historico_estoque') }}">Histórico de Estoque</a></li>
+                <li><a href="{{ url_for('funcionarios') }}">Funcionários</a></li>
+                <li><a href="{{ url_for('entregar_item') }}">Registrar Entrega de Item</a></li>
+                <li><a href="{{ url_for('calendario') }}">Calendário</a></li>
+                
+                {# Link de Notificações (copiado do painel.html para consistência) #}
+                <li class="notification-icon">
+                    <a href="{{ url_for('notificacoes') }}">
+                        <i class="fas fa-bell"></i> Notificações
+                        {% if notifications | length > 0 %}
+                            <span class="notification-badge">{{ notifications | length }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                
+                <li><a href="{{ url_for('logout') }}">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Minhas Notificações</h1>
+
+        {% if notifications %}
+            <div class="notifications-list">
+                {% for notification in notifications %}
+                    <div class="notification-item notification-{{ notification.type }}">
+                        <i class="fas fa-info-circle"></i> {# Ícone genérico, pode mudar por tipo #}
+                        <p>{{ notification.message }}</p>
+                        {% if notification.link %}
+                            <a href="{{ notification.link }}" class="button primary small">Ver Detalhes</a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="info-message">Nenhuma nova notificação no momento.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

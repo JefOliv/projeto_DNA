@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do Fornecedor - {{ fornecedor.nome }}{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <!-- Inclui a biblioteca Chart.js para os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h1>Detalhes do Fornecedor: {{ fornecedor.nome }}</h1>
+
+    <!-- Passa o ID do fornecedor via atributo data -->
+    <div id="fornecedor-info" data-fornecedor-id="{{ fornecedor.id }}"></div>
+
+    <div class="fornecedor-detalhes">
+        <p><strong>ID:</strong> {{ fornecedor.id }}</p>
+        <p><strong>Nome:</strong> {{ fornecedor.nome }}</p>
+        <p><strong>Tipo:</strong>
+            {% if fornecedor.tipo_fornecedor == 'compra_produtos' %}Fornecedor de Produtos
+            {% elif fornecedor.tipo_fornecedor == 'servico' %}Fornecedor de Serviços
+            {% elif fornecedor.tipo_fornecedor == 'aluguel_equipamento' %}Fornecedor de Aluguel de Equipamentos
+            {% else %}N/A
+            {% endif %}
+        </p>
+        <p><strong>Contato:</strong> {{ fornecedor.contato if fornecedor.contato else 'N/A' }}</p>
+        <p><strong>Telefone:</strong> {{ fornecedor.telefone if fornecedor.telefone else 'N/A' }}</p>
+        <p><strong>Email:</strong> {{ fornecedor.email if fornecedor.email else 'N/A' }}</p>
+        <p><strong>Observações:</strong> {{ fornecedor.observacoes if fornecedor.observacoes else 'Nenhuma.' }}</p>
+    </div>
+
+    <p>
+        <a href="{{ url_for('editar_fornecedor', id=fornecedor.id) }}" class="button primary">Editar Fornecedor</a>
+        <a href="{{ url_for('fornecedores') }}" class="button secondary">Voltar para Lista de Fornecedores</a>
+    </p>
+
+    <hr>
+
+    <h2>Itens e Equipamentos de {{ fornecedor.nome }}</h2>
+    <p><a href="{{ url_for('adicionar_item_fornecedor', fornecedor_id=fornecedor.id) }}" class="button primary">Adicionar Item/Equipamento</a></p>
+
+    {% if itens_fornecidos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome do Produto/Serviço</th>
+                    <th>Tipo</th>
+                    <th>Valor Unidade</th>
+                    <th>Quantidade Comprada</th>
+                    <th>Setor</th>
+                    <th>Data</th>
+                    <th>Valor Diária</th>
+                    <th>Início Aluguel</th>
+                    <th>Fim Aluguel</th>
+                    <th>Custo Mensal Estimado</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens_fornecidos %}
+                <tr>
+                    <td>{{ item.nome_produto_servico }}</td>
+                    <td>
+                        {% if item.tipo == 'produto' %}Item de Compra
+                        {% elif item.tipo == 'aluguel' %}Equipamento Alugado
+                        {% elif item.tipo == 'servico' %}Serviço Contratado
+                        {% else %}N/A
+                        {% endif %}
+                    </td>
+                    <td>R$ {{ "%.2f"|format(item.valor_unidade) }}</td>
+                    <td>{{ item.quantidade_comprada if item.quantidade_comprada is not none else 'N/A' }}</td>
+                    <td>{{ item.setor }}</td>
+                    <td>{{ item.data_compra_aluguel.strftime('%d/%m/%Y') }}</td>
+                    <td>R$ {{ "%.2f"|format(item.valor_diaria) if item.valor_diaria is not none else 'N/A' }}</td>
+                    <td>{{ item.data_inicio_aluguel.strftime('%d/%m/%Y') if item.data_inicio_aluguel else 'N/A' }}</td>
+                    <td>{{ item.data_fim_aluguel.strftime('%d/%m/%Y') if item.data_fim_aluguel else 'N/A' }}</td>
+                    <td>R$ {{ "%.2f"|format(item.custo_mensal_estimado) if item.custo_mensal_estimado is not none else 'N/A' }}</td>
+                    <td>
+                        <a href="{{ url_for('editar_item_fornecedor', item_id=item.id) }}" class="button edit small">Editar</a>
+                        <a href="{{ url_for('excluir_item_fornecedor', item_id=item.id) }}" class="button delete small" onclick="return confirm('Tem certeza que deseja excluir este item?');">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum item ou equipamento registrado para este fornecedor ainda.</p>
+    {% endif %}
+
+    <hr>
+    <div class="chart-section">
+        <h2>Gráfico de Consumo do Fornecedor</h2>
+        <div class="chart-controls">
+            <label for="fornecedor_chart_period">Período:</label>
+            <select id="fornecedor_chart_period">
+                <option value="monthly">Mensal</option>
+                <option value="quarterly">Trimestral</option>
+                <option value="yearly">Anual</option>
+                <option value="5years">Últimos 5 Anos</option>
+            </select>
+            <button id="update_fornecedor_chart_button" class="button secondary">Atualizar Gráfico</button>
+        </div>
+        <canvas id="fornecedorConsumptionChart" width="400" height="200"></canvas>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fornecedorCtx = document.getElementById('fornecedorConsumptionChart').getContext('2d');
+        let fornecedorConsumptionChart;
+        
+        const fornecedorId = document.getElementById('fornecedor-info').dataset.fornecedorId;
+
+        function fetchFornecedorChartData(period) {
+            fetch(`/api/consumo/fornecedores/${fornecedorId}?period=${period}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const labels = data.labels;
+                    const dataBought = data.data_bought;
+                    const dataRentedCost = data.data_rented_cost;
+
+                    if (fornecedorConsumptionChart) {
+                        fornecedorConsumptionChart.destroy();
+                    }
+
+                    fornecedorConsumptionChart = new Chart(fornecedorCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Itens Comprados (Qtd)',
+                                    data: dataBought,
+                                    backgroundColor: 'rgba(0, 77, 64, 0.7)',
+                                    borderColor: 'rgba(0, 77, 64, 1)',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Custo de Aluguel (R$)',
+                                    data: dataRentedCost,
+                                    backgroundColor: 'rgba(0, 121, 107, 0.7)',
+                                    borderColor: 'rgba(0, 121, 107, 1)',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Valor / Quantidade'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Consumo do Fornecedor por Período'
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar dados do gráfico do fornecedor:', error));
+        }
+
+        fetchFornecedorChartData('monthly');
+
+        document.getElementById('update_fornecedor_chart_button').addEventListener('click', function() {
+            const selectedPeriod = document.getElementById('fornecedor_chart_period').value;
+            fetchFornecedorChartData(selectedPeriod);
+        });
+    });
+</script>
+{% endblock %}

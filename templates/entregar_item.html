@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Entrega de Item - DNA Manutenção{% endblock %}
+
+{% block content %}
+    <h1>Registrar Entrega de Item a Funcionário</h1>
+    
+
+    <form method="post">
+<div class="form-row">
+            <label for="produto_nome">Nome do Item do Estoque:</label>
+            <input type="text" id="produto_nome" name="produto_nome" placeholder="Comece a digitar o nome do produto..." value="{{ produto_nome_input if produto_nome_input is not none else '' }}" required autocomplete="off"> {# <--- ADICIONE ISTO #}
+            <input type="hidden" id="produto_id" name="produto_id" value="{{ produto_id_input if produto_id_input is not none else '' }}">
+            <div id="suggestions-box-produto" class="suggestions-box"></div>
+        </div>
+
+        <div class="form-row">
+            <label for="funcionario_nome">Nome do Funcionário:</label>
+            <input type="text" id="funcionario_nome" name="funcionario_nome" placeholder="Comece a digitar o nome do funcionário..." value="{{ funcionario_nome_input if funcionario_nome_input is not none else '' }}" required autocomplete="off"> {# <--- ADICIONE ISTO #}
+            <input type="hidden" id="funcionario_id" name="funcionario_id" value="{{ funcionario_id_input if funcionario_id_input is not none else '' }}">
+            <div id="suggestions-box-funcionario" class="suggestions-box"></div>
+        </div>
+
+        <label for="quantidade">Quantidade a Entregar:</label>
+        <input type="number" id="quantidade" name="quantidade" min="1" required value="{{ quantidade_entregue if quantidade_entregue is not none else 1 }}">
+
+        <label for="observacao">Observação (Opcional):</label>
+        <textarea id="observacao" name="observacao" rows="3">{{ observacao if observacao is not none else '' }}</textarea>
+
+        <button type="submit">Registrar Entrega</button>
+        <a href="{{ url_for('painel') }}" class="button secondary">Cancelar</a>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Função genérica para configurar o autocompletar e lidar com pré-preenchimento
+            function setupAutocomplete(inputId, suggestionsBoxId, hiddenIdInputId, apiUrl) {
+                const inputElement = document.getElementById(inputId);
+                const suggestionsBox = document.getElementById(suggestionsBoxId);
+                const hiddenIdInput = document.getElementById(hiddenIdInputId);
+                let timeout = null;
+                let blurTimeout = null;
+
+                // Lógica de inicialização para campos pré-preenchidos (executa uma vez ao carregar)
+                // Se o campo de texto tem um valor E o campo hidden também tem um valor (vindo do Flask),
+                // considere-o como já selecionado e válido.
+                if (inputElement.value && hiddenIdInput.value) {
+                    console.log(`[INIT] ${inputId} e ${hiddenIdInputId} pré-preenchidos. Valor: "${inputElement.value}", ID: "${hiddenIdInput.value}"`);
+                } else {
+                    // Se o campo de texto tem um valor mas o hidden NÃO tem, tenta validar no carregamento
+                    // Isso pode ocorrer se o Flask passar o nome, mas não o ID no cenário de erro
+                    if (inputElement.value && !hiddenIdInput.value) {
+                        console.log(`[INIT] ${inputId} tem valor ("${inputElement.value}"), mas ${hiddenIdInputId} está vazio. Tentando validar.`);
+                        fetch(`${apiUrl}?term=${encodeURIComponent(inputElement.value)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const exactMatch = data.find(item => item.label.toLowerCase() === inputElement.value.toLowerCase());
+                                if (exactMatch) {
+                                    hiddenIdInput.value = exactMatch.value;
+                                    console.log(`[INIT] ${hiddenIdInputId} preenchido com: "${hiddenIdInput.value}" (validação na inicialização).`);
+                                } else {
+                                    // Se não houver correspondência exata, limpa o campo de texto e o ID oculto
+                                    inputElement.value = '';
+                                    hiddenIdInput.value = '';
+                                    console.log(`[INIT] ${inputId} limpo, sem correspondência exata.`);
+                                }
+                            })
+                            .catch(error => console.error(`[INIT] Erro na validação de ${inputId} (inicialização):`, error));
+                    }
+                }
+                // --- FIM Lógica de inicialização ---
+
+
+                inputElement.addEventListener('input', function() {
+                    // Sempre que o usuário digita, assumimos que a seleção anterior pode ser inválida
+                    // Limpa o hidden ID *apenas se o usuário começar a digitar*
+                    // Isso permite que o campo fique pré-preenchido se vier do servidor
+                    if (hiddenIdInput.value) { // Se o ID oculto tinha um valor, o usuário está alterando
+                        hiddenIdInput.value = ''; 
+                        console.log(`Input ${inputId}: Usuário digitando, limpando ID oculto ${hiddenIdInputId}.`);
+                    }
+                    
+                    clearTimeout(timeout);
+                    suggestionsBox.style.display = 'none';
+                    const query = this.value;
+
+                    if (query.length < 2) {
+                        suggestionsBox.innerHTML = '';
+                        return;
+                    }
+
+                    timeout = setTimeout(function() {
+                        fetch(`${apiUrl}?term=${encodeURIComponent(query)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                suggestionsBox.innerHTML = '';
+                                if (data.length > 0) {
+                                    data.forEach(item => {
+                                        const div = document.createElement('div');
+                                        div.classList.add('suggestion-item');
+                                        div.textContent = item.label;
+                                        div.dataset.value = item.label; // Nome/Label para o campo de texto
+                                        div.dataset.id = item.value;    // ID real para o campo oculto
+
+                                        div.addEventListener('click', function(e) {
+                                            e.preventDefault();
+                                            inputElement.value = this.dataset.value;
+                                            hiddenIdInput.value = this.dataset.id;
+
+                                            console.log(`Input ${inputId} SELECIONADO: "${this.dataset.value}"`);
+                                            console.log(`ID oculto ${hiddenIdInputId} PREENCHIDO com: "${hiddenIdInput.value}"`);
+
+                                            suggestionsBox.innerHTML = '';
+                                            suggestionsBox.style.display = 'none';
+                                            inputElement.focus(); // Coloca o foco de volta no input principal
+                                        });
+                                        suggestionsBox.appendChild(div);
+                                    });
+                                    suggestionsBox.style.display = 'block';
+                                } else {
+                                    suggestionsBox.style.display = 'none';
+                                }
+                            })
+                            .catch(error => console.error(`Erro na busca de ${inputId}:`, error));
+                    }, 300);
+                });
+
+                inputElement.addEventListener('blur', function() {
+                    blurTimeout = setTimeout(() => {
+                        suggestionsBox.style.display = 'none';
+                        
+                        // Lógica de validação no BLUR:
+                        // Se o campo de texto NÃO ESTÁ VAZIO
+                        // E o ID oculto AINDA ESTÁ VAZIO (o que significa que o usuário não selecionou uma sugestão ou digitou algo que não correspondeu)
+                        if (inputElement.value !== '' && hiddenIdInput.value === '') {
+                            console.log(`Input ${inputId} em BLUR: Valor "${inputElement.value}" mas ID oculto vazio. Tentando validação exata.`);
+                            fetch(`${apiUrl}?term=${encodeURIComponent(inputElement.value)}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    // Procura uma correspondência EXATA (case-insensitive)
+                                    // Importante: A comparação deve ser com o label que a API retorna
+                                    const exactMatch = data.find(item => item.label.toLowerCase() === inputElement.value.toLowerCase());
+                                    if (exactMatch) {
+                                        hiddenIdInput.value = exactMatch.value;
+                                        console.log(`ID oculto ${hiddenIdInputId} VALIDADO (blur) e preenchido com: "${hiddenIdInput.value}"`);
+                                    } else {
+                                        // Se não encontrar correspondência exata, limpa os campos
+                                        inputElement.value = '';
+                                        hiddenIdInput.value = '';
+                                        console.log(`Input ${inputId} LIMPO (blur), sem correspondência exata.`);
+                                    }
+                                })
+                                .catch(error => console.error(`Erro na validação de ${inputId} (blur):`, error));
+                        } else if (inputElement.value === '' && hiddenIdInput.value !== '') {
+                            // Se o usuário limpou o texto do input, mas o ID oculto tem valor, limpa o ID oculto também.
+                            hiddenIdInput.value = '';
+                            console.log(`Input ${inputId} vazio, ID oculto ${hiddenIdInputId} LIMPO.`);
+                        }
+                    }, 100);
+                });
+
+                // Previne o blur dos inputs principais quando o usuário clica nas sugestões
+                suggestionsBox.addEventListener('mousedown', function(event) {
+                    event.preventDefault();
+                });
+
+                document.addEventListener('click', function(event) {
+                    if (!inputElement.contains(event.target) && !suggestionsBox.contains(event.target)) {
+                        suggestionsBox.style.display = 'none';
+                    }
+                });
+
+                inputElement.addEventListener('focus', function() {
+                    clearTimeout(blurTimeout); // Cancela o blurTimeout se o usuário voltar para o campo
+                });
+            }
+
+            // Iniciar os autocompletes para Produto e Funcionário
+            setupAutocomplete(
+                'produto_nome',        // ID do input de texto
+                'suggestions-box-produto',  // ID da div de sugestões
+                'produto_id',         // ID do input oculto para o ID
+                '/autocomplete/produtos'    // Rota da API de autocompletar
+            );
+
+            setupAutocomplete(
+                'funcionario_nome',         // ID do input de texto
+                'suggestions-box-funcionario',  // ID da div de sugestões
+                'funcionario_id',           // ID do input oculto para o ID
+                '/autocomplete/funcionarios'    // Rota da API de autocompletar
+            );
+        });
+    </script>
+{% endblock %}

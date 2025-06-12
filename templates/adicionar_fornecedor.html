@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Adicionar Fornecedor - DNA Manutenção{% endblock %}
+
+{% block content %}
+    <h1>{% if fornecedor %}Editar Fornecedor: {{ fornecedor.nome }}{% else %}Adicionar Novo Fornecedor{% endif %}</h1>
+    
+    <form method="post">
+        <label for="nome">Nome do Fornecedor:</label>
+        <input type="text" id="nome" name="nome" value="{{ fornecedor.nome if fornecedor else '' }}" required>
+
+        <label for="tipo_fornecedor">Tipo de Fornecedor:</label> {# NOVO CAMPO #}
+        <select id="tipo_fornecedor" name="tipo_fornecedor" required>
+            <option value="">Selecione o Tipo</option>
+            <option value="compra_produtos" {% if fornecedor and fornecedor.tipo_fornecedor == 'compra_produtos' %}selected{% endif %}>Produtos para Compra</option>
+            <option value="locacao_equipamentos" {% if fornecedor and fornecedor.tipo_fornecedor == 'locacao_equipamentos' %}selected{% endif %}>Locação de Equipamentos</option>
+        </select>
+
+        <label for="contato">Pessoa de Contato:</label>
+        <input type="text" id="contato" name="contato" value="{{ fornecedor.contato if fornecedor else '' }}">
+
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone" value="{{ fornecedor.telefone if fornecedor else '' }}">
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ fornecedor.email if fornecedor else '' }}">
+
+        <label for="observacoes">Observações:</label>
+        <textarea id="observacoes" name="observacoes" rows="4">{{ fornecedor.observacoes if fornecedor else '' }}</textarea>
+
+        <button type="submit">{% if fornecedor %}Salvar Alterações{% else %}Adicionar Fornecedor{% endif %}</button>
+        <a href="{{ url_for('fornecedores') }}" class="button secondary">Cancelar</a>
+    </form>
+{% endblock %}

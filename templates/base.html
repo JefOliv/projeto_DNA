@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DNA Manutenção{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {# A linha para o CSS principal do FullCalendar (main.min.css) deve estar APENAS aqui. #}
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' />
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="header-left-group">
+            <div class="header-logo">
+                <a href="{{ url_for('painel') }}" class="header-text-logo">DNA Manutenção</a>
+            </div>
+            <nav>
+                <ul>
+                    <li {% if request.endpoint == 'painel' %}class="active"{% endif %}>
+                        <a href="{{ url_for('painel') }}"><i class="fas fa-home menu-icon"></i> Início</a>
+                    </li>
+                    <li {% if request.endpoint == 'funcionarios' %}class="active"{% endif %}>
+                        <a href="{{ url_for('funcionarios') }}"><i class="fas fa-users menu-icon"></i> Funcionários</a>
+                    </li>
+                    <li {% if request.endpoint == 'fornecedores' %}class="active"{% endif %}>
+                        <a href="{{ url_for('fornecedores') }}"><i class="fas fa-truck-moving menu-icon"></i> Fornecedores</a>
+                    </li>
+                    <li {% if request.endpoint == 'editor_produto' %}class="active"{% endif %}>
+                        <a href="{{ url_for('editor_produto') }}"><i class="fas fa-box-open menu-icon"></i> Estoque</a>
+                    </li>
+                    <li {% if request.endpoint == 'entregar_item' %}class="active"{% endif %}>
+                        <a href="{{ url_for('entregar_item') }}"><i class="fas fa-dolly menu-icon"></i> Entregar Item</a>
+                    </li>
+                    <li {% if request.endpoint == 'calendario' %}class="active"{% endif %}>
+                        <a href="{{ url_for('calendario') }}"><i class="fas fa-calendar-alt menu-icon"></i> Calendário</a>
+                    </li>
+                    <li {% if request.endpoint == 'historico_estoque' %}class="active"{% endif %}>
+                        <a href="{{ url_for('historico_estoque') }}"><i class="fas fa-history menu-icon"></i> Histórico</a>
+                    </li>
+                    <li class="notification-menu-item" onclick="toggleNotificationsModal()">
+                        <a href="#"> <i class="fas fa-bell menu-icon"></i> Notificações
+                            <span class="notification-badge" id="notification-count">{{ notifications_count | default(0) }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="header-right-group">
+            <div class="header-user-info">
+                Olá, {{ session.get('usuario') }} (Matrícula: {{ session.get('matricula') }}) | <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <p class="flash-message {{ category }}-message">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; {{ now().year }} DNA Manutenção. Todos os direitos reservados.</p>
+    </footer>
+
+    {# Modal de Notificações #}
+    <div id="notifications-modal" class="notification-modal">
+        <div class="notification-modal-content">
+            <span class="close-button" onclick="toggleNotificationsModal()">&times;</span>
+            <h3>Notificações</h3>
+            <div id="modal-notifications-list" class="notifications-list">
+                {# Conteúdo das notificações será carregado via JS #}
+            </div>
+        </div>
+    </div>
+
+    {# Modal de Adição de Evento #}
+    <div id="add-event-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="window.closeAddEventModal()">&times;</span>
+            <h3>Adicionar Novo Evento</h3>
+            <form id="add-event-form">
+                <label for="event-titulo">Título do Evento:</label>
+                <input type="text" id="event-titulo" name="titulo" required>
+
+                <label for="event-data-hora">Data e Hora:</label>
+                <input type="datetime-local" id="event-data-hora" name="data_hora" required>
+
+                <label for="event-descricao">Descrição (Opcional):</label>
+                <textarea id="event-descricao" name="descricao" rows="3"></textarea>
+
+                <label for="event-local">Local (Opcional):</label>
+                <input type="text" id="event-local" name="local">
+                
+                <button type="submit" class="button primary">Salvar Evento</button>
+            </form>
+        </div>
+    </div>
+
+
+    {# Scripts globais #}
+    <script>
+        // --- NOVO: Variáveis globais do modal de evento declaradas no topo ---
+        let globalAddEventModal;
+        let globalAddEventForm;
+        let globalEventDataHoraInput;
+
+        // Funções Globais para o Modal de Adição de Evento
+        window.openAddEventModal = function(dateStr = '') {
+            if (globalAddEventModal && globalEventDataHoraInput) {
+                if (dateStr) {
+                    globalEventDataHoraInput.value = dateStr;
+                } else {
+                    globalEventDataHoraInput.value = ''; 
+                }
+                globalAddEventModal.style.display = 'flex';
+                globalEventDataHoraInput.focus();
+            } else {
+                console.error("Erro: Elementos do modal de adicionar evento não encontrados em base.html. (open)");
+            }
+        };
+
+        window.closeAddEventModal = function() {
+            if (globalAddEventModal && globalAddEventForm) {
+                globalAddEventModal.style.display = 'none';
+                globalAddEventForm.reset();
+            } else {
+                console.error("Erro: Elementos do modal de adicionar evento não encontrados em base.html. (close)");
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- NOVO: Inicialização das variáveis globais DENTRO do DOMContentLoaded ---
+            globalAddEventModal = document.getElementById('add-event-modal');
+            globalAddEventForm = document.getElementById('add-event-form');
+            globalEventDataHoraInput = document.getElementById('event-data-hora');
+
+            // --- NOVO: Adicionar o event listener do formulário de evento AQUI ---
+            if (globalAddEventForm) {
+                globalAddEventForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(globalAddEventForm);
+                    const data = Object.fromEntries(formData.entries());
+
+                    try {
+                        const response = await fetch('/adicionar_evento', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: new URLSearchParams(data).toString(),
+                        });
+                        
+                        const contentType = response.headers.get("content-type");
+                        if (contentType && contentType.indexOf("application/json") !== -1) {
+                            const result = await response.json();
+                            if (response.ok) {
+                                alert('Evento adicionado com sucesso!');
+                                window.closeAddEventModal();
+                                // IMPORTANTE: Disparar evento personalizado para scripts de página
+                                document.dispatchEvent(new CustomEvent('globalAddEventSuccess', { detail: { eventData: result.event } }));
+                            } else {
+                                alert('Erro: ' + (result.message || 'Erro desconhecido ao adicionar evento.'));
+                                document.dispatchEvent(new CustomEvent('globalAddEventError', { detail: { message: result.message } }));
+                            }
+                        } else {
+                            console.error("Resposta não é JSON. Conteúdo:", await response.text());
+                            alert("Erro inesperado do servidor. Verifique o console.");
+                            document.dispatchEvent(new CustomEvent('globalAddEventError', { detail: { message: 'Resposta não JSON' } }));
+                        }
+
+                    } catch (error) {
+                        console.error('Erro na submissão do evento:', error);
+                        alert('Erro na conexão com o servidor ao adicionar evento.');
+                        document.dispatchEvent(new CustomEvent('globalAddEventError', { detail: { message: error.message } }));
+                    }
+                });
+            } else {
+                console.error("globalAddEventForm não encontrado após DOMContentLoaded em base.html. Formulário de evento pode não submeter via AJAX.");
+            }
+
+            // Funções para esconder flash messages após um tempo
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                setTimeout(function() {
+                    message.style.opacity = '0';
+                    message.style.transition = 'opacity 0.5s ease-out';
+                    setTimeout(function() {
+                        message.remove();
+                    }, 500);
+                }, 5000); // 5 segundos
+            });
+
+            // Lógica do Modal de Notificações
+            const notificationsModal = document.getElementById('notifications-modal');
+            const notificationCountBadge = document.getElementById('notification-count');
+            const modalNotificationsList = document.getElementById('modal-notifications-list');
+
+            function toggleNotificationsModal() {
+                notificationsModal.style.display = notificationsModal.style.display === 'flex' ? 'none' : 'flex';
+                if (notificationsModal.style.display === 'flex') {
+                    updateNotificationsModalContent();
+                    markNotificationsAsReadOnServer(); 
+                }
+            }
+
+            async function updateNotificationsModalContent() {
+                modalNotificationsList.innerHTML = ''; 
+                const notifications = {{ global_notifications_list | default([]) | tojson | safe }}; 
+                const notificationCount = {{ notifications_count | default(0) }};
+
+                notificationCountBadge.textContent = notificationCount;
+                if (notificationCount > 0) {
+                    notificationCountBadge.style.display = 'block';
+                } else {
+                    notificationCountBadge.style.display = 'none';
+                }
+
+                if (notifications && notifications.length > 0) {
+                    notifications.forEach(notif => {
+                        const notifDiv = document.createElement('div');
+                        notifDiv.className = `notification-item notification-${notif.type}`;
+                        notifDiv.innerHTML = `
+                            <p class="notification-message-text">${notif.message}</p>
+                            <span class="notification-datetime">${notif.datetime || ''}</span>
+                            ${notif.link ? `<a href="${notif.link}" class="notification-link">Ver Detalhes</a>` : ''}
+                        `;
+                        modalNotificationsList.appendChild(notifDiv);
+                    });
+                } else {
+                    modalNotificationsList.innerHTML = '<p class="info-message">Nenhuma notificação no momento.</p>';
+                }
+            }
+
+            async function markNotificationsAsReadOnServer() {
+                try {
+                    const response = await fetch('/api/notifications/mark_as_read', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        notificationCountBadge.textContent = '0';
+                        notificationCountBadge.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Erro ao marcar notificações como lidas:', error);
+                }
+            }
+
+            updateNotificationsModalContent();
+
+            window.onclick = function(event) {
+                if (event.target == notificationsModal) {
+                    notificationsModal.style.display = "none";
+                }
+                if (event.target === globalAddEventModal && globalAddEventModal.style.display === 'flex') {
+                    window.closeAddEventModal();
+                }
+            }
+        });
+    </script>
+    {% block scripts %}{% endblock %} {# Para adicionar scripts JavaScript no final do body #}
+</body>
+</html>

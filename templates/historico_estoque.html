@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico de Movimentações - DNA Manutenção{% endblock %}
+
+{% block content %}
+    <h1>Histórico de Movimentações de Estoque</h1>
+
+    {# NOVO: Seção para o Gráfico de Consumo #}
+    <div class="chart-section">
+        <h2>Gráfico de Consumo de Itens</h2>
+        <div class="chart-controls">
+            <label for="chart_period">Período:</label>
+            <select id="chart_period">
+                <option value="monthly">Mensal</option>
+                <option value="quarterly">Trimestral</option>
+                <option value="yearly">Anual</option>
+                <option value="5years">Últimos 5 Anos</option>
+            </select>
+            <button id="update_chart_button" class="button secondary">Atualizar Gráfico</button>
+        </div>
+        <canvas id="consumptionChart" width="400" height="200"></canvas>
+    </div>
+
+    <hr>
+
+    <h2>Detalhes das Movimentações</h2>
+    {% if movimentacoes %}
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        <a href="{{ url_for('historico_estoque', sort_by='data_hora', sort_order='asc' if current_sort_by != 'data_hora' or current_sort_order == 'desc' else 'desc', filtro=request.args.get('filtro', '')) }}">
+                            Data/Hora
+                            {% if current_sort_by == 'data_hora' %}
+                                {% if current_sort_order == 'asc' %}<i class="fas fa-sort-up"></i>{% else %}<i class="fas fa-sort-down"></i>{% endif %}
+                            {% else %}
+                                <i class="fas fa-sort"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ url_for('historico_estoque', sort_by='produto', sort_order='asc' if current_sort_by != 'produto' or current_sort_order == 'desc' else 'desc', filtro=request.args.get('filtro', '')) }}">
+                            Produto (ID)
+                            {% if current_sort_by == 'produto' %}
+                                {% if current_sort_order == 'asc' %}<i class="fas fa-sort-up"></i>{% else %}<i class="fas fa-sort-down"></i>{% endif %}
+                            {% else %}
+                                <i class="fas fa-sort"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ url_for('historico_estoque', sort_by='tipo_movimentacao', sort_order='asc' if current_sort_by != 'tipo_movimentacao' or current_sort_order == 'desc' else 'desc', filtro=request.args.get('filtro', '')) }}">
+                            Tipo
+                            {% if current_sort_by == 'tipo_movimentacao' %}
+                                {% if current_sort_order == 'asc' %}<i class="fas fa-sort-up"></i>{% else %}<i class="fas fa-sort-down"></i>{% endif %}
+                            {% else %}
+                                <i class="fas fa-sort"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ url_for('historico_estoque', sort_by='quantidade', sort_order='asc' if current_sort_by != 'quantidade' or current_sort_order == 'desc' else 'desc', filtro=request.args.get('filtro', '')) }}">
+                            Quantidade
+                            {% if current_sort_by == 'quantidade' %}
+                                {% if current_sort_order == 'asc' %}<i class="fas fa-sort-up"></i>{% else %}<i class="fas fa-sort-down"></i>{% endif %}
+                            {% else %}
+                                <i class="fas fa-sort"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ url_for('historico_estoque', sort_by='funcionario', sort_order='asc' if current_sort_by != 'funcionario' or current_sort_order == 'desc' else 'desc', filtro=request.args.get('filtro', '')) }}">
+                            Funcionário (Matrícula)
+                            {% if current_sort_by == 'funcionario' %}
+                                {% if current_sort_order == 'asc' %}<i class="fas fa-sort-up"></i>{% else %}<i class="fas fa-sort-down"></i>{% endif %}
+                            {% else %}
+                                <i class="fas fa-sort"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>Observação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mov in movimentacoes %}
+                <tr>
+                    <td>{{ mov.data_hora_local.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                    <td>{{ mov.produto.nome }} ({{ mov.produto.id }})</td>
+                    <td>
+                        {% if mov.tipo_movimentacao == 'entrada' %}
+                            <span class="badge entrada">Entrada</span>
+                        {% else %}
+                            <span class="badge saida">Saída</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ mov.quantidade }}</td>
+                    <td>
+                        {% if mov.funcionario %}
+                            <a href="{{ url_for('detalhe_funcionario', id=mov.funcionario.id) }}"> {# <<<<<<< CORREÇÃO AQUI #}
+                                {{ mov.funcionario.nome_completo }} ({{ mov.funcionario.matricula }})
+                            </a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ mov.observacao if mov.observacao else 'N/A' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhuma movimentação de estoque registrada ainda.</p>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('consumptionChart').getContext('2d');
+        let consumptionChart; 
+
+        function fetchChartData(period) {
+            fetch(`/api/consumo/produtos?period=${period}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const labels = data.labels;
+                    const dataIn = data.data_in;
+                    const dataOut = data.data_out;
+
+                    if (consumptionChart) {
+                        consumptionChart.destroy();
+                    }
+
+                    consumptionChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Entrada de Itens',
+                                data: dataIn,
+                                backgroundColor: 'rgba(0, 70, 100, 0.6)',
+                                borderColor: 'rgba(0, 70, 100, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Saída de Itens',
+                                data: dataOut,
+                                backgroundColor: 'rgba(21, 189, 206, 0.6)',
+                                borderColor: 'rgba(21, 189, 206, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Quantidade'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Consumo de Itens por Período'
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar dados do gráfico:', error));
+        }
+
+        fetchChartData('monthly');
+
+        document.getElementById('update_chart_button').addEventListener('click', function() {
+            const selectedPeriod = document.getElementById('chart_period').value;
+            fetchChartData(selectedPeriod);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do Funcionário - {{ funcionario.nome_completo }}{% endblock %}
+
+{% block content %}
+    <h1>Detalhes do Funcionário: {{ funcionario.nome_completo }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <p class="flash-message {{ category }}-message">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="funcionario-detalhes">
+        <div class="funcionario-info-main">
+            {% if funcionario.foto_url %}
+                <img src="{{ funcionario.foto_url }}" alt="Foto de {{ funcionario.nome_completo }}" class="foto-funcionario">
+            {% else %}
+                <div class="foto-placeholder">Sem foto</div>
+            {% endif %}
+            
+            <p><strong>Matrícula:</strong> {{ funcionario.matricula }}</p>
+            <p><strong>Função:</strong> {{ funcionario.funcao }}</p>
+            <p><strong>Setor:</strong> {{ funcionario.setor }}</p>
+            <p><strong>Data de Admissão:</strong> {{ funcionario.data_admissao.strftime('%d/%m/%Y') }}</p>
+            <p><strong>Idade:</strong> {{ idade if idade is not none else 'Não Informada' }}</p>
+            <p><strong>PCD:</strong> {% if funcionario.pcd %}Sim{% else %}Não{% endif %}</p>
+        </div>
+
+        <div class="funcionario-info-contact">
+            <h3>Contato</h3>
+            <p><strong>Telefone:</strong> {{ funcionario.telefone if funcionario.telefone else 'N/A' }}</p>
+            <p><strong>Email Pessoal:</strong> {{ funcionario.email_pessoal if funcionario.email_pessoal else 'N/A' }}</p>
+            <h4>Endereço</h4>
+            <p>{{ funcionario.endereco_rua if funcionario.endereco_rua else 'N/A' }}, {{ funcionario.endereco_numero if funcionario.endereco_numero else 'S/N' }}</p>
+            <p>{{ funcionario.endereco_complemento if funcionario.endereco_complemento else '' }}</p>
+            <p>{{ funcionario.endereco_bairro if funcionario.endereco_bairro else 'N/A' }}</p>
+            <p>{{ funcionario.endereco_cidade if funcionario.endereco_cidade else 'N/A' }} - {{ funcionario.endereco_estado if funcionario.endereco_estado else 'N/A' }}</p>
+            <p>{{ funcionario.endereco_cep if funcionario.endereco_cep else 'N/A' }} - {{ funcionario.endereco_pais if funcionario.endereco_pais else 'N/A' }}</p>
+        </div>
+
+        <div class="funcionario-info-docs">
+            <h3>Documentos</h3>
+            <p><strong>RG:</strong> {{ funcionario.rg_numero if funcionario.rg_numero else 'N/A' }} ({{ funcionario.rg_orgao_emissor if funcionario.rg_orgao_emissor else 'N/A' }}/{{ funcionario.rg_estado_emissor if funcionario.rg_estado_emissor else 'N/A' }})</p>
+            <p><strong>Data Emissão RG:</strong> {{ funcionario.rg_data_emissao.strftime('%d/%m/%Y') if funcionario.rg_data_emissao else 'N/A' }}</p>
+            <p><strong>CPF:</strong> {{ funcionario.cpf_numero if funcionario.cpf_numero else 'N/A' }}</p>
+            <p><strong>CTPS:</strong> {{ funcionario.ctps_numero if funcionario.ctps_numero else 'N/A' }} Série: {{ funcionario.ctps_serie if funcionario.ctps_serie else 'N/A' }}</p>
+            <p><strong>Data Emissão CTPS:</strong> {{ funcionario.ctps_data_emissao.strftime('%d/%m/%Y') if funcionario.ctps_data_emissao else 'N/A' }}</p>
+            <p><strong>PIS:</strong> {{ funcionario.pis_numero if funcionario.pis_numero else 'N/A' }}</p>
+            <p><strong>Título Eleitor:</strong> {{ funcionario.titulo_eleitor_numero if funcionario.titulo_eleitor_numero else 'N/A' }} Zona: {{ funcionario.titulo_eleitor_zona if funcionario.titulo_eleitor_zona else 'N/A' }} Seção: {{ funcionario.titulo_eleitor_secao if funcionario.titulo_eleitor_secao else 'N/A' }}</p>
+            <p><strong>Cert. Reservista:</strong> {{ funcionario.certificado_reservista_numero if funcionario.certificado_reservista_numero else 'N/A' }}</p>
+            <p><strong>CNH:</strong> {{ funcionario.cnh_numero if funcionario.cnh_numero else 'N/A' }} ({{ funcionario.cnh_orgao_emissor if funcionario.cnh_orgao_emissor else 'N/A' }}/{{ funcionario.cnh_estado_emissor if funcionario.cnh_estado_emissor else 'N/A' }})</p>
+            <p><strong>Validade CNH:</strong> {{ funcionario.cnh_data_vencimento.strftime('%d/%m/%Y') if funcionario.cnh_data_vencimento else 'N/A' }}</p>
+        </div>
+
+        <div class="funcionario-info-comments">
+            <h3>Comentários</h3>
+            <p>{{ funcionario.comentarios if funcionario.comentarios else 'Nenhum comentário.' }}</p>
+        </div>
+    </div>
+
+    <p class="form-row-button">
+        <a href="{{ url_for('editar_funcionario', funcionario_id=funcionario.id) }}" class="button primary">Editar Funcionário</a>
+        <a href="{{ url_for('funcionarios') }}" class="button secondary">Voltar para Lista de Funcionários</a>
+    </p>
+
+    <hr>
+
+    <h2>Itens Retirados por {{ funcionario.nome_completo }}</h2>
+    {% if itens_pegos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Data da Retirada</th>
+                    <th>Observação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item_mov in itens_pegos %}
+                <tr>
+                    <td><a href="{{ url_for('editar_produto_individual', id=item_mov.produto.id) }}">{{ item_mov.produto.nome }}</a></td>
+                    <td>{{ item_mov.quantidade }}</td>
+                    <td>{{ item_mov.data_hora_local.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                    <td>{{ item_mov.observacao if item_mov.observacao else 'N/A' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum item foi retirado por este funcionário ainda.</p>
+    {% endif %}
+{% endblock %}

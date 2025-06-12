@@ -1,0 +1,24 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Node/JavaScript
+node_modules/
+package-lock.json # Ou yarn.lock, se estiver usando yarn
+/build/
+/dist/
+
+# Uploaded files
+static/uploads/fotos_funcionarios/
+
+# Database files (local, se usar)
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

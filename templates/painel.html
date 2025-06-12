@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Painel - DNA Manutenção{% endblock %}
+
+{# Não precisamos de um bloco head aqui se o Font Awesome já está no base.html #}
+
+{% block content %}
+    <h1>Bem-vindo ao Painel de Controle, {{ session.get('usuario') }}!</h1>
+
+    <hr>
+
+    {# A seção de Notificações Diretas foi movida para o Modal no cabeçalho #}
+    {# Removido: {% if global_notifications %} ... {% endif %} #}
+
+
+    <h2>Módulos do Sistema</h2>
+    <div class="card-container">
+        <a href="{{ url_for('editor_produto') }}" class="card">
+            <i class="fas fa-box-open card-icon"></i>
+            <h2>Estoque</h2>
+            <p>Gerencie o inventário de EPIs, ferramentas e outros itens. Monitore níveis e receba alertas de estoque baixo.</p>
+        </a>
+        <a href="{{ url_for('historico_estoque') }}" class="card">
+            <i class="fas fa-history card-icon"></i>
+            <h2>Histórico de Estoque</h2>
+            <p>Visualize todas as movimentações de entrada e saída de itens no estoque.</p>
+        </a>
+        <a href="{{ url_for('funcionarios') }}" class="card">
+            <i class="fas fa-users card-icon"></i>
+            <h2>Funcionários</h2>
+            <p>Cadastre e consulte informações de colaboradores, incluindo histórico de itens retirados.</p>
+        </a>
+        <a href="{{ url_for('calendario') }}" class="card">
+            <i class="fas fa-calendar-alt card-icon"></i>
+            <h2>Calendário</h2>
+            <p>Acompanhe reuniões, treinamentos e eventos importantes da equipe.</p>
+        </a>
+        <a href="{{ url_for('fornecedores') }}" class="card">
+            <i class="fas fa-truck-moving card-icon"></i>
+            <h2>Fornecedores</h2>
+            <p>Gerencie contatos e histórico de compras/aluguéis com os fornecedores da empresa.</p>
+        </a>
+        <a href="{{ url_for('entregar_item') }}" class="card">
+            <i class="fas fa-dolly card-icon"></i>
+            <h2>Registrar Entrega</h2>
+            <p>Lance a saída de itens do estoque e vincule-os a um funcionário.</p>
+        </a>
+    </div>
+
+{% endblock %}
+
+{# Não precisamos de um bloco scripts aqui, a função de flash messages está no base.html #}

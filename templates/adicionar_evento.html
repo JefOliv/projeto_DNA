@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Adicionar Evento - DNA Manutenção</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="user-info">
+                Olá, {{ usuario }} (Matrícula: {{ matricula }})!
+            </div>
+            <ul>
+                <li><a href="{{ url_for('painel') }}">Início</a></li>
+                <li><a href="{{ url_for('editor_produto') }}">Estoque</a></li>
+                <li><a href="{{ url_for('historico_estoque') }}">Histórico de Estoque</a></li>
+                <li><a href="{{ url_for('funcionarios') }}">Funcionários</a></li>
+                <li><a href="{{ url_for('entregar_item') }}">Registrar Entrega de Item</a></li>
+                <li><a href="{{ url_for('calendario') }}">Calendário</a></li>
+                <li><a href="{{ url_for('logout') }}">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Adicionar Novo Evento</h1>
+
+        {# Bloco para exibir mensagens flash (sucesso, erro, aviso) #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="alert alert-{{ category }}">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('adicionar_evento') }}">
+            <label for="titulo">Título do Evento:</label>
+            <input type="text" id="titulo" name="titulo" value="{{ titulo if titulo else '' }}" required>
+
+            <label for="data">Data do Evento:</label>
+            <input type="date" id="data" name="data" value="{{ data_str if data_str else '' }}" required>
+
+            <label for="hora">Hora do Evento:</label> {# NOVO CAMPO DE HORA #}
+            <input type="time" id="hora" name="hora" value="{{ hora_str if hora_str else '00:00' }}" required>
+
+            <label for="descricao">Descrição (Opcional):</label>
+            <textarea id="descricao" name="descricao" rows="4">{{ descricao if descricao else '' }}</textarea>
+
+            <button type="submit">Adicionar Evento</button>
+            <a href="{{ url_for('calendario') }}" class="button secondary">Cancelar</a>
+        </form>
+    </main>
+</body>
+</html>

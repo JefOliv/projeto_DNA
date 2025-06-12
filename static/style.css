@@ -1,0 +1,1672 @@
+/* Variáveis CSS para a paleta de cores (DNA Manutenção - CORES EXATAS SOLICITADAS) */
+:root {
+    --primary-color: #004664; /* Azul escuro - cor predominante */
+    --secondary-color: #15bdce; /* Azul claro - cor secundária */
+    --accent-color: #4CAF50; /* Verde vivo - para sucesso, ícones (mantido para feedback) */
+    --text-dark: #333; /* Texto principal */
+    --text-light: #f4f4f4; /* Texto em fundos escuros */
+    --background-light: #f9f9f9; /* Fundo de formulários, seções */
+    --background-page: #eef7f6; /* Fundo geral da página */
+    --border-color: #ddd; /* Bordas de elementos */
+    --error-color: #dc3545; /* Vermelho para erros */
+    --warning-color: #ffc107; /* Amarelo para alertas/avisos */
+    --info-color: #007bff; /* Azul para informações */
+}
+
+/* Base global do corpo da página */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fonte moderna e limpa */
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-page);
+    color: var(--text-dark);
+    line-height: 1.6;
+    /* Estilos para a imagem de fundo, conforme sua sugestão */
+    background-image: url('/static/images/DNA_Engenharia_logo_page-0001.png'); /* Caminho da imagem de fundo */
+    background-repeat: no-repeat;
+    background-position: center center; /* Centraliza a imagem */
+    background-size: cover; /* Faz a imagem cobrir toda a área */
+    background-attachment: fixed; /* Fixa a imagem durante a rolagem */
+    display: flex; /* Para o footer ficar no final */
+    flex-direction: column; /* Para o footer ficar no final */
+    min-height: 100vh; /* Para o footer ficar no final */
+}
+
+/* Container principal para o conteúdo da página */
+main {
+    position: relative;
+    z-index: 1;
+    padding: 30px;
+    /* Remover max-width fixo daqui para dar mais flexibilidade,
+       vamos controlar a largura em media queries */
+    width: 95%; /* Usar porcentagem para ser mais responsivo */
+    margin: 30px auto; /* Centraliza o conteúdo */
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    flex-grow: 1;
+}
+/* Estilização para o container da página de login */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ocupa a altura total da viewport */
+    background-color: var(--background-page);
+    /* Imagem de fundo específica para o login */
+    background-image: url('/static/images/DNA_Engenharia_logo_page-0001.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+/* Caixa do formulário de login */
+.login-box {
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 400px; /* Largura máxima para o formulário */
+    text-align: center;
+}
+
+.login-box h1 {
+    margin-bottom: 30px;
+    color: var(--primary-color);
+}
+
+/* Cabeçalho e Navegação (para todas as páginas logadas) */
+header {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between; /* Espaça os grupos da esquerda e da direita */
+    align-items: center;
+    flex-wrap: nowrap; /* Garante que todo o cabeçalho fique em uma única linha */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Grupo de elementos à esquerda (Logo DNA + Menu) */
+.header-left-group {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Reduzido de 20px para economizar espaço */
+    flex-wrap: nowrap; /* Garante que logo e menu fiquem na mesma linha dentro do grupo */
+}
+
+/* Grupo de elementos à direita (Informação do Usuário + Sino) */
+.header-right-group {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Reduzido de 20px para economizar espaço */
+    flex-wrap: nowrap; /* Garante que info e sino fiquem na mesma linha dentro do grupo */
+}
+
+/* Estilo para o texto "DNA Manutenção" no cabeçalho */
+.header-text-logo {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 1.5em;
+    font-weight: bold;
+    white-space: nowrap; /* Impede quebra de linha */
+    transition: color 0.3s ease;
+    flex-shrink: 0; /* Impede que o logo encolha */
+}
+
+.header-text-logo:hover {
+    color: var(--secondary-color);
+}
+
+/* Navegação principal */
+header nav {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+header nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: nowrap; /* Impede que os itens do menu individualmente quebrem linha */
+    justify-content: flex-start;
+}
+
+header nav ul li {
+    margin: 0 8px; /* Reduzido de 10px para economizar espaço */
+    position: relative;
+}
+
+/* Estilo para links de menu (com ícones) */
+header nav ul li a {
+    color: var(--text-light);
+    text-decoration: none;
+    padding: 6px 10px; /* Reduzido de 8px 12px para economizar espaço */
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    white-space: nowrap; /* Evita quebra de linha nos nomes dos links */
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+    gap: 4px; /* Espaço entre ícone e texto */
+}
+
+header nav ul li a:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+
+/* ESTILO PARA ITEM DE MENU ATIVO */
+header nav ul li.active a {
+    background-color: var(--secondary-color);
+    font-weight: bold;
+    transform: translateY(-2px);
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* Ícone dentro do item de menu */
+.menu-icon {
+    font-size: 1em; /* Tamanho do ícone para ser igual ao texto */
+}
+
+/* Item de menu para Notificações (li.notification-menu-item) */
+li.notification-menu-item {
+    margin: 0 8px; /* Mantém o espaçamento dos outros itens de menu */
+    position: relative; /* Contexto de posicionamento para o badge */
+    cursor: pointer; /* Indica que é clicável */
+    display: flex; /* Para alinhar o a com a contagem */
+    align-items: center; /* Alinha verticalmente */
+}
+
+/* Ajuste o link (a) dentro do item de menu "Notificações" */
+.notification-menu-item a {
+    color: var(--text-light);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    white-space: nowrap;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: bold;
+}
+
+.notification-menu-item a:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+
+/* Badge de notificação */
+.notification-badge {
+    position: absolute;
+    top: -5px; /* Ajuste verticalmente */
+    right: -10px; /* Ajuste horizontalmente, movendo para a direita do texto */
+    background-color: var(--error-color);
+    color: white;
+    font-size: 0.6em; /* Tamanho da fonte para o número */
+    padding: 3px 6px; /* Padding para o fundo do número */
+    border-radius: 50%;
+    font-weight: bold;
+    line-height: 1; /* Garante que o número fique centralizado */
+    min-width: 18px; /* Garante forma circular para 1 dígito */
+    text-align: center;
+    border: 1px solid white; /* Borda branca para destaque */
+    z-index: 10; /* Garante que fique por cima de outros elementos */
+    /* display é controlado por JS */
+}
+
+
+/* Informação do usuário */
+.header-user-info {
+    white-space: nowrap; /* Impede quebra de linha */
+    color: var(--text-light);
+    font-size: 0.9em;
+    font-weight: bold;
+    flex-shrink: 0; /* Não encolhe */
+}
+
+.header-user-info a {
+    color: var(--text-light);
+    text-decoration: none;
+    margin-left: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+.header-user-info a:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+
+
+/* Títulos principais e secundários */
+h1, h2 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* Estilização geral de formulários */
+form {
+    background-color: var(--background-light);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 5px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+form input[type="text"],
+form input[type="number"],
+form input[type="date"],
+form input[type="url"],
+form input[type="password"],
+form input[type="file"], /* Estilo para input de upload de arquivo */
+form textarea,
+form select {
+    width: calc(100% - 24px); /* Ajuste para padding e border */
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    box-sizing: border-box; /* Garante que padding e border não aumentem o tamanho total */
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+form input:focus,
+form textarea:focus,
+form select:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(21, 189, 206, 0.2); /* Sombra suave com a nova cor secundária */
+    outline: none;
+}
+
+/* Estilização geral de botões */
+.button,
+button[type="submit"] {
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none; /* Para botões que são links */
+    display: inline-block; /* Para botões que são links */
+    text-align: center;
+    margin-right: 10px; /* Espaçamento entre botões */
+}
+
+.button:hover,
+button[type="submit"]:hover {
+    background-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.button.secondary {
+    background-color: #6c757d; /* Cinza */
+}
+.button.secondary:hover {
+    background-color: #5a6268;
+}
+
+.button.edit {
+    background-color: var(--warning-color); /* Amarelo */
+    color: var(--text-dark); /* Texto escuro para contraste */
+}
+.button.edit:hover {
+    background-color: #e0a800;
+}
+
+.button.delete {
+    background-color: var(--error-color); /* Vermelho */
+    color: var(--text-light); /* Para ter texto branco no delete */
+}
+.button.delete:hover {
+    background-color: #c82333;
+}
+
+.button.primary {
+    background-color: var(--info-color); /* Azul padrão */
+}
+.button.primary:hover {
+    background-color: #0056b3;
+}
+
+/* Botões pequenos para tabelas */
+.button.small {
+    padding: 6px 10px;
+    font-size: 0.85em;
+    margin-right: 5px;
+}
+
+/* Mensagens de feedback (Flash Messages) */
+.flash-messages { /* Container para todas as mensagens flash */
+    position: fixed; /* Fixa na tela */
+    top: 70px; /* Ajuste para ficar abaixo do cabeçalho (aprox. altura do header + um pouco de margem) */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    z-index: 1000; /* Garante que fique acima de outros conteúdos e modals */
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    opacity: 1; /* Inicia visível */
+    transition: opacity 0.5s ease-out; /* Transição para sumir */
+}
+
+.flash-message { /* Estilo base para cada mensagem individual */
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 10px; /* Espaçamento entre mensagens */
+    text-align: center;
+    font-weight: bold;
+    opacity: 0.95;
+    transition: opacity 0.5s ease-out; /* Transição para sumir */
+}
+
+/* Cores específicas para cada categoria de mensagem */
+.success-message { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; } /* Verde para sucesso */
+.danger-message { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }   /* Vermelho para perigo/erro */
+.warning-message { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; } /* Amarelo para aviso */
+.info-message { background-color: #e3f2fd; color: #0c5460; border: 1px solid #cce5ff; }    /* Azul para informação */
+
+/* Tabelas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    overflow: hidden; /* Garante que os cantos arredondados sejam aplicados */
+}
+
+table th, table td {
+    border: 1px solid var(--border-color);
+    padding: 12px 15px;
+    text-align: left;
+}
+
+table th {
+    background-color: var(--primary-color);
+    color: var(--text-light) !important; /* FORÇA BRANCO */
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+/* Garante que links dentro de THs tenham a cor correta e sem sublinhado */
+table th a {
+    color: var(--text-light) !important; /* Força branco */
+    text-decoration: none !important; /* Remove sublinhado */
+    display: inline-block; /* Permite que o link ocupe o espaço */
+    width: 100%; /* Ocupa a largura do TH */
+}
+
+table th a:hover {
+    text-decoration: underline !important; /* Opcional: Sublinhar ao passar o mouse */
+    color: var(--text-light) !important;
+}
+
+table tr:nth-child(even) {
+    background-color: #f6fdfc; /* Fundo ligeiramente diferente para linhas pares */
+}
+
+table tr:hover {
+    background-color: #e9f7f5; /* Destaca a linha ao passar o mouse */
+}
+
+.actions {
+    white-space: nowrap; /* Evita que os botões de ação quebrem linha */
+}
+
+/* Alerta de Estoque Baixo */
+.alerta-estoque-baixo {
+    background-color: var(--warning-color); /* Amarelo mais vibrante para o fundo */
+    color: var(--text-dark); /* Texto escuro para contraste no amarelo */
+    font-weight: bold;
+}
+
+.alerta-estoque-baixo td {
+    border-color: #ffeeba; /* Borda mais clara */
+}
+
+/* Seção de Filtro (Estoque) */
+.filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    background-color: var(--background-light);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.filter-section input[type="text"] {
+    flex-grow: 1;
+    margin-bottom: 0;
+    min-width: 180px;
+}
+
+.filter-section label {
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.filter-section input[type="checkbox"] {
+    margin-right: 8px;
+    width: auto;
+    margin-bottom: 0;
+    transform: scale(1.2);
+}
+
+/* Linha Divisória */
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+    margin: 40px 0;
+}
+
+/* Seções de Formulário */
+.form-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--background-light);
+    border-radius: 8px;
+}
+
+/* Estilos para badges (entrada/saida) */
+.badge {
+    display: inline-block;
+    padding: .35em .6em;
+    font-size: 85%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .3rem;
+    color: white;
+}
+
+.badge.entrada {
+    background-color: var(--accent-color);
+}
+
+.badge.saida {
+    background-color: var(--warning-color);
+    color: var(--text-dark);
+}
+
+/* Estilo para a foto do funcionário */
+.funcionario-detalhes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: 30px;
+    background-color: var(--background-light);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+}
+
+.foto-funcionario {
+    width: 180px;
+    height: 240px;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.foto-placeholder {
+    width: 180px;
+    height: 240px;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #666;
+    border: 2px dashed #bbb;
+    border-radius: 8px;
+    font-size: 1em;
+    text-align: center;
+    font-weight: bold;
+}
+
+.funcionario-detalhes p {
+    margin: 8px 0;
+    font-size: 1.1em;
+}
+.funcionario-detalhes p strong {
+    color: var(--primary-color);
+}
+
+/* Estilos para a página inicial com Cards */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+    justify-content: center;
+}
+
+.card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 1.6em;
+}
+
+.card p {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 0;
+}
+
+.card-icon {
+    font-size: 2.5em; /* Tamanho do ícone */
+    color: var(--secondary-color);
+    margin-bottom: 12px;
+}
+
+/* Nova Seção de Controles Superiores (Estoque, etc.) */
+.top-controls-section {
+    background-color: var(--background-light);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: space-around;
+}
+
+.top-controls-section h2 {
+    width: 100%;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: var(--primary-color);
+}
+
+.top-controls-section h3 {
+    color: var(--secondary-color);
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    width: 100%;
+}
+
+.form-add-product,
+.filter-section {
+    flex: 1;
+    min-width: 320px;
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+
+.compact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 0;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form-row label {
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.compact-form input[type="text"],
+.compact-form input[type="number"],
+.compact-form input[type="date"],
+.compact-form input[type="url"],
+.compact-form input[type="password"],
+.compact-form input[type="file"],
+.compact-form textarea,
+.compact-form select {
+    width: calc(100% - 10px); /* Ajuste para padding e border do input */
+    padding: 8px;
+    margin-bottom: 0;
+    font-size: 0.95em;
+}
+
+.form-row-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    gap: 10px;
+}
+
+.filter-form-layout {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.filter-form-layout .form-row {
+    margin-bottom: 10px;
+}
+
+.filter-form-layout .form-row-checkbox label {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0;
+}
+.filter-form-layout .form-row-checkbox input[type="checkbox"] {
+    margin-right: 5px;
+    width: auto;
+    margin-bottom: 0;
+    transform: scale(1);
+}
+
+/* Estilos para o Modal de Notificações */
+.notification-modal {
+    display: none; /* Escondido por padrão */
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.notification-modal-content {
+    background-color: white; /* Fundo branco para o modal */
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    max-height: 90vh; /* Limita a altura do modal */
+    overflow-y: auto; /* Adiciona scroll se necessário */
+}
+
+@keyframes animatetop {
+    from {top: -300px; opacity: 0}
+    to {top: 0; opacity: 1}
+}
+
+.notification-modal-content h3 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.notification-modal .close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    right: 15px;
+    top: 5px;
+    cursor: pointer;
+}
+
+.notification-modal .close-button:hover,
+.notification-modal .close-button:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.notification-modal .notifications-list {
+    margin-top: 0;
+}
+
+/* Cores por tipo de notificação */
+.notification-item {
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-left: 5px solid;
+    background-color: white;
+    color: var(--text-dark);
+}
+
+/* Forçar a cor do texto das notificações para escuro no fundo branco */
+.notification-item p {
+    color: var(--text-dark) !important;
+    margin: 0;
+    font-size: 1em;
+}
+
+.notification-item .notification-message-text {
+    font-weight: bold;
+}
+
+.notification-item .notification-datetime {
+    font-size: 0.8em;
+    color: #666;
+}
+
+
+/* Remover sublinhado de links dentro de notificações */
+.notification-item a {
+    text-decoration: none !important;
+    color: var(--info-color) !important;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.notification-item i {
+    color: inherit;
+}
+
+/* Bordas coloridas para cada tipo de notificação */
+.notification-item.notification-warning { border-left-color: var(--warning-color); }
+.notification-item.notification-info { border-left-color: var(--info-color); }
+.notification-item.notification-danger { border-left-color: var(--error-color); }
+.notification-item.notification-success { border-left-color: var(--accent-color); }
+
+
+.info-message {
+    padding: 15px;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    text-align: center;
+    color: #495057;
+    margin-top: 20px;
+}
+
+/* Estilos para o autocomplete */
+.suggestions-box {
+    border: 1px solid var(--border-color);
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    position: absolute;
+    width: calc(100% - 24px); /* Mesma largura do input */
+    display: none;
+    border-radius: 5px;
+    margin-top: -15px;
+}
+
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background-color: var(--background-page);
+}
+
+/* Estilos para Gráficos */
+.chart-section {
+    background-color: var(--background-light);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.chart-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.chart-controls {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.chart-controls label {
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+.chart-controls select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+/* Estilo para tabela de itens de fornecedor */
+.fornecedor-item-table {
+    margin-top: 20px;
+}
+
+/* Estilo para campos de aluguel condicional */
+#aluguel_equipamento_fields {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px dashed var(--border-color);
+    border-radius: 5px;
+    background-color: #f0f0f0;
+}
+
+/* --- Estilos para a Página de Calendário (AJUSTADOS PARA TAMANHO) --- */
+.calendar-page-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+    gap: 30px; /* Espaço entre as colunas */
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.calendar-sidebar {
+    flex: 0 0 350px; /* Largura fixa para a barra lateral (ajustada para 350px) */
+    max-width: 100%;
+    background-color: var(--background-light);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 500px; /* Adiciona uma altura mínima para a sidebar */
+}
+.calendar-main-view {
+    flex-grow: 1; /* Ocupa o espaço restante */
+    /* Reduzimos a largura mínima do calendário para torná-lo menor */
+    min-width: 400px; /* Ajustado para 400px, tornando-o mais compacto */
+    max-width: 700px; /* Adicionando uma largura máxima para não ficar gigante */
+    background-color: var(--background-light);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+#fullcalendar-main {
+    height: 500px; /* Ajuste a altura aqui se quiser, pode ser menor se o calendário for pequeno */
+    /* Removida a altura fixa do HTML, CSS é o ideal */
+    max-width: 100%; /* Garante que ele não transborde seu container */
+    margin: 0 auto;
+}
+.add-event-button {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 0; /* Remover margem padrão do botão se houver */
+}
+
+.event-list-section {
+    flex-grow: 1; /* Faz a lista de eventos ocupar o espaço restante na sidebar */
+    overflow-y: auto; /* Adiciona scroll se a lista for muito longa */
+    max-height: calc(100% - 70px); /* Ajusta altura máxima para caber no sidebar */
+}
+
+.event-list-section h2 {
+    color: var(--primary-color);
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.upcoming-event-item {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    line-height: 1.5;
+    position: relative;
+    font-size: 0.95em; /* Ajusta tamanho da fonte para a lista */
+}
+
+.upcoming-event-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Destaque para o próximo evento */
+.upcoming-event-item.next-event {
+    border: 2px solid var(--secondary-color); /* Borda de destaque */
+    background-color: #e6f7ff; /* Fundo mais claro */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.upcoming-event-item strong {
+    color: var(--primary-color);
+    font-size: 1.1em;
+    display: block; /* Título em sua própria linha */
+    margin-bottom: 5px;
+}
+
+.upcoming-event-item .button.edit.small {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+
+.calendar-main-view {
+    flex-grow: 1; /* Ocupa o espaço restante */
+    min-width: 450px; /* **Reduzido para 450px para tornar o calendário menor** */
+    max-width: 600px; /* **Adicionado max-width para limitar o tamanho do calendário** */
+    background-color: var(--background-light);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Ajustes da altura do FullCalendar */
+#fullcalendar-main {
+    height: 480px; /* **Ajustado para uma altura menor (pode ser 500px, 450px, etc.)** */
+    max-width: 100%;
+    margin: 0 auto;
+}
+.fc .fc-button-primary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Rodapé */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    color: #777;
+    font-size: 0.9em;
+    background-color: rgba(255, 255, 255, 0.7); /* Fundo semi-transparente para o rodapé */
+    border-top: 1px solid var(--border-color);
+}
+
+
+/* --- Responsividade (Media Queries) --- */
+@media (max-width: 992px) { /* Ajuste para tablets */
+    header {
+        flex-direction: column; /* Empilha os grupos (left e right) */
+        align-items: center; /* Centraliza horizontalmente */
+        gap: 10px; /* Reduz o espaçamento entre grupos */
+        padding: 15px 10px; /* Ajusta padding */
+    }
+
+    .header-left-group, .header-right-group {
+        width: 100%; /* Ocupa a largura total */
+        justify-content: center; /* Centraliza itens dentro do grupo */
+        flex-wrap: wrap; /* Permite quebrar itens dentro do grupo */
+        gap: 10px;
+    }
+
+    /* Ajustes específicos para nav em telas menores */
+    header nav {
+        flex-basis: 100%; /* Ocupa a largura total */
+        margin-top: 5px; /* Espaçamento do topo */
+        justify-content: center; /* Centraliza a navegação */
+    }
+
+    header nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+
+    header nav ul li {
+        margin: 5px 8px; /* Ajusta espaçamento entre itens */
+    }
+
+    /* Outros ajustes menores */
+    .header-text-logo {
+        margin-bottom: 0;
+    }
+    .notification-bell-container {
+        margin-left: 0;
+    }
+
+    main {
+        margin: 20px 10px;
+        padding: 15px;
+    }
+
+    .card-container {
+        grid-template-columns: 1fr; /* Uma coluna em telas menores */
+    }
+
+    .form-row-group {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .form-row {
+        min-width: unset; /* Remove largura mínima */
+        width: 100%;
+    }
+
+    form input[type="text"],
+    form input[type="email"],
+    form input[type="password"],
+    form input[type="number"],
+    form input[type="tel"],
+    form input[type="date"],
+    form input[type="file"],
+    form select,
+    form textarea {
+        width: 100%; /* Ocupa 100% da largura do pai */
+    }
+
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filter-form .filter-group {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+@media (max-width: 768px) {
+    main {
+        margin: 10px auto;
+        padding: 15px;
+    }
+    form {
+        padding: 15px;
+    }
+    form input[type="text"],
+    form input[type="number"],
+    form input[type="date"],
+    form input[type="url"],
+    form input[type="password"],
+    form input[type="file"],
+    form textarea,
+    form select {
+        width: calc(100% - 16px);
+        padding: 10px;
+    }
+    .button,
+    button[type="submit"] {
+        padding: 10px 15px;
+        font-size: 0.95em;
+        margin-right: 5px;
+    }
+    .button.small {
+        padding: 5px 8px;
+        font-size: 0.8em;
+    }
+    .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 15px;
+    }
+    .filter-section input[type="text"] {
+        width: 100%;
+        min-width: unset;
+    }
+    .filter-section button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+    .filter-section .button.secondary {
+        margin-left: 0;
+    }
+    .funcionario-detalhes {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+        padding: 20px;
+    }
+    .foto-funcionario, .foto-placeholder {
+        width: 120px;
+        height: 160px;
+    }
+    .card-container {
+        grid-template-columns: 1fr;
+    }
+    table, .fornecedor-item-table {
+        font-size: 0.85em;
+    }
+    table th, table td {
+        padding: 8px 10px;
+    }
+    .funcionario-form-section .form-row-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .funcionario-form-section .form-row-group .form-row {
+        width: 100%;
+    }
+}
+
+/* Responsividade para telas muito pequenas (ex: smartphones antigos) */
+@media (max-width: 480px) {
+    main {
+        margin: 10px;
+        padding: 10px;
+    }
+    h1 {
+        font-size: 1.8em;
+    }
+    h2 {
+        font-size: 1.4em;
+    }
+    .button, button[type="submit"] {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    .login-box {
+        padding: 20px;
+    }
+}
+
+@media (min-width: 993px) { /* A partir de 993px e acima */
+    main {
+        max-width: 1400px; /* Aplica o max-width para telas maiores */
+        width: 90%; /* Ajusta a largura para telas maiores */
+    }
+}
+
+@media (max-width: 992px) {
+    .calendar-main-view {
+        min-width: unset; /* Remove min-width em telas menores para não ter overflow */
+    }
+}
+
+/* Ajustes para telas médias (tablets e desktops menores) */
+@media (max-width: 992px) { /* Do 992px para baixo (tablets) */
+    header {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 10px;
+    }
+
+    .header-left-group, .header-right-group {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    header nav {
+        flex-basis: 100%;
+        margin-top: 5px;
+        justify-content: center;
+    }
+    header nav ul {
+        flex-wrap: wrap; /* Permite quebrar linha para itens de menu em telas menores */
+        justify-content: center;
+        width: 100%;
+    }
+    header nav ul li {
+        margin: 5px 8px;
+    }
+
+    .header-text-logo {
+        margin-bottom: 0;
+    }
+    .notification-bell-container {
+        margin-left: 0;
+    }
+
+    main {
+        margin: 20px 10px;
+        padding: 15px;
+        width: auto; /* Permite que o main ocupe a largura flexível sem max-width fixo */
+    }
+
+    /* Regras para o CALENDÁRIO em 992px (empilha as colunas) */
+    .calendar-page-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .calendar-page-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .calendar-sidebar, .calendar-main-view {
+        flex: 0 0 100%;
+        min-width: unset;
+        padding: 15px;
+    }
+    #fullcalendar-main {
+        height: 400px; /* Altura um pouco menor em telas menores */
+    }
+}
+
+    /* Outras seções que usam flex-direction: column */
+    .form-row-group {
+        flex-direction: column;
+        gap: 0;
+    }
+    .form-row {
+        min-width: unset;
+        width: 100%;
+    }
+    form input[type="text"],
+    form input[type="email"],
+    form input[type="password"],
+    form input[type="number"],
+    form input[type="tel"],
+    form input[type="date"],
+    form input[type="file"],
+    form select,
+    form textarea {
+        width: 100%;
+    }
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filter-form .filter-group {
+        width: 100%;
+        min-width: unset;
+    }
+
+
+@media (max-width: 768px) { /* Seu media query existente para mobile, para ajustes menores */
+    /* Mantenha as regras específicas para 768px ou menos aqui.
+       Removi as duplicadas que já estavam no 992px. */
+    main {
+        margin: 10px auto;
+        padding: 15px;
+    }
+    form {
+        padding: 15px;
+    }
+    form input[type="text"],
+    form input[type="number"],
+    form input[type="date"],
+    form input[type="url"],
+    form input[type="password"],
+    form input[type="file"],
+    form textarea,
+    form select {
+        width: calc(100% - 16px);
+        padding: 10px;
+    }
+    .button,
+    button[type="submit"] {
+        padding: 10px 15px;
+        font-size: 0.95em;
+        margin-right: 5px;
+    }
+    .button.small {
+        padding: 5px 8px;
+        font-size: 0.8em;
+    }
+    .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 15px;
+    }
+    .filter-section input[type="text"] {
+        width: 100%;
+        min-width: unset;
+    }
+    .filter-section button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+    .filter-section .button.secondary {
+        margin-left: 0;
+    }
+    .funcionario-detalhes {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+        padding: 20px;
+    }
+    .foto-funcionario, .foto-placeholder {
+        width: 120px;
+        height: 160px;
+    }
+    .card-container {
+        grid-template-columns: 1fr;
+    }
+    table, .fornecedor-item-table {
+        font-size: 0.85em;
+    }
+    table th, table td {
+        padding: 8px 10px;
+    }
+    .funcionario-form-section .form-row-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .funcionario-form-section .form-row-group .form-row {
+        width: 100%;
+    }
+}
+
+/* Responsividade para telas muito pequenas */
+@media (max-width: 480px) {
+    main {
+        margin: 10px;
+        padding: 10px;
+    }
+    h1 {
+        font-size: 1.8em;
+    }
+    h2 {
+        font-size: 1.4em;
+    }
+    .button, button[type="submit"] {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    .login-box {
+        padding: 20px;
+    }
+}
+
+/* --- Estilos para Modais (geral) --- */
+.modal {
+    display: none; /* <-- GARANTA QUE ESTA LINHA ESTÁ AQUI E NÃO FOI SOBRESCRITA */
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center; /* Para centralizar conteúdo */
+    align-items: center; /* Para centralizar conteúdo */
+    /* NÃO COLOQUE 'display: flex;' aqui por padrão, ele será ativado via JS */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%; /* Responsive width */
+    max-width: 500px; /* Maximum width */
+    position: relative;
+    animation-name: animatetop; /* Animation defined below */
+    animation-duration: 0.4s;
+    max-height: 90vh; /* Limits height to avoid overflow */
+    overflow-y: auto; /* Adds scroll if content is too large */
+}
+
+/* Keyframes for modal animation */
+@keyframes animatetop {
+    from {top: -300px; opacity: 0}
+    to {top: 0; opacity: 1}
+}
+
+.modal-content h3 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.modal .close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    right: 15px;
+    top: 5px;
+    cursor: pointer;
+}
+
+.modal .close-button:hover,
+.modal .close-button:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Form elements inside modal */
+.modal form label,
+.modal form input[type="text"],
+.modal form input[type="datetime-local"],
+.modal form textarea,
+.modal form select,
+.modal form button[type="submit"] {
+    /* Reuse styles from your general form section */
+    width: calc(100% - 20px); /* Adjust padding for 20px */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+.modal form button[type="submit"] {
+    width: 100%; /* Make submit button full width */
+    margin-top: 15px;
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal form button[type="submit"]:hover {
+    background-color: var(--primary-color);
+}
+
+/* --- Ajustes de Estilo para o FullCalendar (Integração de Tema) --- */
+
+/* Contêiner principal do calendário */
+.fc {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Usa a fonte do seu body */
+    font-size: 1em; /* Tamanho da fonte padrão */
+}
+
+/* Cabeçalho do calendário (navigação, título) */
+.fc .fc-toolbar {
+    background-color: var(--primary-color); /* Fundo do cabeçalho do calendário */
+    color: var(--text-light); /* Cor do texto no cabeçalho */
+    border-radius: 8px 8px 0 0; /* Bordas arredondadas no topo */
+    padding: 10px 15px;
+    margin-bottom: 0 !important; /* Remover margem padrão do FullCalendar */
+}
+
+/* Título do calendário (ex: "Junho de 2025") */
+.fc .fc-toolbar-title {
+    color: var(--text-light);
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* Botões de navegação (anterior, próximo, hoje, mês, semana, dia) */
+.fc .fc-button {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+    text-transform: none; /* Evita CAPS no texto do botão */
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.fc .fc-button:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.fc .fc-button-active {
+    background-color: var(--primary-color) !important; /* Botão ativo (mês/semana/dia) */
+    border-color: var(--primary-color) !important;
+}
+
+/* Cabeçalho da tabela de dias da semana (Dom, Seg, Ter...) */
+.fc .fc-col-header {
+    background-color: #f0f0f0; /* Fundo mais claro para os dias da semana */
+    border-bottom: 1px solid var(--border-color);
+}
+
+.fc .fc-col-header-cell-cushion {
+    color: var(--primary-color); /* Cor do texto dos dias da semana */
+    font-weight: bold;
+    padding: 8px 0;
+}
+
+/* Células dos dias do calendário */
+.fc-daygrid-day {
+    background-color: white; /* Fundo dos dias */
+    border: 1px solid var(--border-color);
+}
+
+.fc-daygrid-day-frame {
+    min-height: 80px; /* Altura mínima para as células dos dias */
+}
+
+/* Número do dia */
+.fc-daygrid-day-number {
+    color: var(--text-dark);
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 5px;
+}
+
+/* Dias fora do mês atual */
+.fc-day-other .fc-daygrid-day-number {
+    color: #ccc; /* Cor mais clara para dias de outros meses */
+}
+
+/* Eventos no calendário */
+.fc-event {
+    background-color: var(--secondary-color); /* Cor de fundo dos eventos */
+    border: 1px solid var(--secondary-color);
+    color: white;
+    border-radius: 3px;
+    padding: 2px 5px;
+    margin-bottom: 2px;
+    font-size: 0.85em;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fc-event .fc-event-main {
+    color: white; /* Garante que o texto principal do evento seja branco */
+}
+
+/* Tooltip do evento */
+.fc-event-title {
+    font-weight: bold;
+}
+
+/* Indicador de "hoje" */
+.fc-day-today {
+    background-color: #fcf8e3 !important; /* Fundo amarelo suave para o dia de hoje */
+    border: 2px solid var(--warning-color) !important; /* Borda de destaque para hoje */
+}
+
+/* Estilo para o modal de evento no FullCalendar (se você não estiver usando um modal customizado) */
+.fc-popover {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+.fc-popover-header {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+}
+
+/* Regras de Responsividade Específicas para o Calendário */
+@media (max-width: 992px) {
+    /* Em telas menores, o calendário e a sidebar se empilham (já configurado no .calendar-page-container) */
+    .calendar-main-view {
+        min-width: unset; /* Remove largura mínima para ser responsivo */
+        width: 100%; /* Ocupa largura total disponível */
+    }
+    #fullcalendar-main {
+        height: 500px; /* Ajusta a altura em telas menores */
+    }
+    .calendar-sidebar {
+        min-width: unset;
+        width: 100%;
+    }
+}

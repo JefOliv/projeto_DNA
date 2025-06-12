@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Adicionar Funcionário - DNA Manutenção{% endblock %}
+
+{% block content %}
+    <h1>Adicionar Novo Funcionário</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <p class="flash-message {{ category }}-message">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" enctype="multipart/form-data"> {# Adicionado enctype para upload de arquivo #}
+        <h2>Dados Pessoais e Contato</h2>
+        <div class="form-section funcionario-form-section">
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="nome_completo">Nome Completo:</label>
+                    <input type="text" id="nome_completo" name="nome_completo" required>
+                </div>
+                <div class="form-row">
+                    <label for="matricula">Matrícula:</label>
+                    <input type="text" id="matricula" name="matricula" required>
+                </div>
+            </div>
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="funcao">Função:</label>
+                    <input type="text" id="funcao" name="funcao" required>
+                </div>
+                <div class="form-row">
+                    <label for="setor">Setor:</label>
+                    <select id="setor" name="setor" required>
+                        <option value="">Selecione um setor</option>
+                        {% for setor_opt in setores %} {# Aqui 'setores' (minúsculo) é usado, conforme a variável passada pelo Flask #}
+                            <option value="{{ setor_opt }}">{{ setor_opt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="data_admissao">Data de Admissão:</label>
+                    <input type="date" id="data_admissao" name="data_admissao" required>
+                </div>
+                <div class="form-row">
+                    <label for="data_nascimento">Data de Nascimento:</label>
+                    <input type="date" id="data_nascimento" name="data_nascimento">
+                </div>
+            </div>
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="genero">Gênero:</label>
+                    <select id="genero" name="genero">
+                        <option value="">Selecione</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Feminino">Feminino</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="pcd">É PCD?</label>
+                    <input type="checkbox" id="pcd" name="pcd" value="true">
+                </div>
+            </div>
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="telefone">Telefone:</label>
+                    <input type="tel" id="telefone" name="telefone" placeholder="(XX) XXXXX-XXXX">
+                </div>
+                <div class="form-row">
+                    <label for="email_pessoal">Email Pessoal:</label>
+                    <input type="email" id="email_pessoal" name="email_pessoal">
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="foto">Foto 3x4 (PNG, JPG, GIF):</label>
+                <input type="file" id="foto" name="foto" accept="image/png, image/jpeg, image/gif">
+            </div>
+            <div class="form-row">
+                <label for="comentarios">Comentários:</label>
+                <textarea id="comentarios" name="comentarios" rows="4"></textarea>
+            </div>
+        </div>
+
+        <h2>Endereço</h2>
+        <div class="form-section funcionario-form-section">
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="endereco_rua">Rua:</label>
+                    <input type="text" id="endereco_rua" name="endereco_rua">
+                </div>
+                <div class="form-row">
+                    <label for="endereco_numero">Número:</label>
+                    <input type="text" id="endereco_numero" name="endereco_numero">
+                </div>
+            </div>
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="endereco_complemento">Complemento:</label>
+                    <input type="text" id="endereco_complemento" name="endereco_complemento">
+                </div>
+                <div class="form-row">
+                    <label for="endereco_bairro">Bairro:</label>
+                    <input type="text" id="endereco_bairro" name="endereco_bairro">
+                </div>
+            </div>
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="endereco_cidade">Cidade:</label>
+                    <input type="text" id="endereco_cidade" name="endereco_cidade">
+                </div>
+                <div class="form-row">
+                    <label for="endereco_estado">Estado (UF):</label>
+                    <input type="text" id="endereco_estado" name="endereco_estado" maxlength="2">
+                </div>
+                <div class="form-row">
+                    <label for="endereco_pais">País:</label>
+                    <input type="text" id="endereco_pais" name="endereco_pais" value="Brasil">
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="endereco_cep">CEP:</label>
+                <input type="text" id="endereco_cep" name="endereco_cep" placeholder="XXXXX-XXX">
+            </div>
+        </div>
+
+        <h2>Documentos</h2>
+        <div class="form-section funcionario-form-section">
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="rg_numero">RG Número:</label>
+                    <input type="text" id="rg_numero" name="rg_numero">
+                </div>
+                <div class="form-row">
+                    <label for="rg_orgao_emissor">RG Órgão Emissor:</label>
+                    <input type="text" id="rg_orgao_emissor" name="rg_orgao_emissor">
+                </div>
+                <div class="form-row">
+                    <label for="rg_estado_emissor">RG Estado Emissor (UF):</label>
+                    <input type="text" id="rg_estado_emissor" name="rg_estado_emissor" maxlength="2">
+                </div>
+                <div class="form-row">
+                    <label for="rg_data_emissao">RG Data Emissão:</label>
+                    <input type="date" id="rg_data_emissao" name="rg_data_emissao">
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="cpf_numero">CPF:</label>
+                <input type="text" id="cpf_numero" name="cpf_numero" placeholder="XXX.XXX.XXX-XX">
+            </div>
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="ctps_numero">CTPS Número:</label>
+                    <input type="text" id="ctps_numero" name="ctps_numero">
+                </div>
+                <div class="form-row">
+                    <label for="ctps_serie">CTPS Série:</label>
+                    <input type="text" id="ctps_serie" name="ctps_serie">
+                </div>
+                <div class="form-row">
+                    <label for="ctps_estado_emissor">CTPS Estado Emissor (UF):</label>
+                    <input type="text" id="ctps_estado_emissor" name="ctps_estado_emissor" maxlength="2">
+                </div>
+                <div class="form-row">
+                    <label for="ctps_data_emissao">CTPS Data Emissão:</label>
+                    <input type="date" id="ctps_data_emissao" name="ctps_data_emissao">
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="pis_numero">PIS Número:</label>
+                <input type="text" id="pis_numero" name="pis_numero">
+            </div>
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="titulo_eleitor_numero">Título Eleitor Número:</label>
+                    <input type="text" id="titulo_eleitor_numero" name="titulo_eleitor_numero">
+                </div>
+                <div class="form-row">
+                    <label for="titulo_eleitor_zona">Título Eleitor Zona:</label>
+                    <input type="text" id="titulo_eleitor_zona" name="titulo_eleitor_zona">
+                </div>
+                <div class="form-row">
+                    <label for="titulo_eleitor_secao">Título Eleitor Seção:</label>
+                    <input type="text" id="titulo_eleitor_secao" name="titulo_eleitor_secao">
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="certificado_reservista_numero">Certificado de Reservista Número:</label>
+                <input type="text" id="certificado_reservista_numero" name="certificado_reservista_numero">
+            </div>
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label for="cnh_numero">CNH Número:</label>
+                    <input type="text" id="cnh_numero" name="cnh_numero">
+                </div>
+                <div class="form-row">
+                    <label for="cnh_orgao_emissor">CNH Órgão Emissor:</label>
+                    <input type="text" id="cnh_orgao_emissor" name="cnh_orgao_emissor">
+                </div>
+                <div class="form-row">
+                    <label for="cnh_estado_emissor">CNH Estado Emissor (UF):</label>
+                    <input type="text" id="cnh_estado_emissor" name="cnh_estado_emissor" maxlength="2">
+                </div>
+                <div class="form-row">
+                    <label for="cnh_data_emissao">CNH Data Emissão:</label>
+                    <input type="date" id="cnh_data_emissao" name="cnh_data_emissao">
+                </div>
+                <div class="form-row">
+                    <label for="cnh_data_vencimento">CNH Data Vencimento:</label>
+                    <input type="date" id="cnh_data_vencimento" name="cnh_data_vencimento">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row-button">
+            <button type="submit" class="button primary">Adicionar Funcionário</button>
+            <a href="{{ url_for('funcionarios') }}" class="button secondary">Cancelar</a>
+        </div>
+    </form>
+{% endblock %}

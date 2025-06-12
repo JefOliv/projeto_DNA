@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Item para {{ fornecedor.nome }}: {{ item.nome_produto_servico }} - DNA Manutenção{% endblock %}
+
+{% block content %}
+    <h1>Editar Item para {{ fornecedor.nome }}: {{ item.nome_produto_servico }}</h1>
+    
+    <form method="post">
+        <label for="nome_produto_servico">Nome do Produto/Serviço:</label>
+        <input type="text" id="nome_produto_servico" name="nome_produto_servico" value="{{ item.nome_produto_servico }}" required>
+
+        <label for="tipo">Tipo:</label>
+        <select id="tipo" name="tipo" required>
+            <option value="">Selecione o Tipo</option>
+            <option value="compra" {% if item.tipo == 'compra' %}selected{% endif %}>Item de Compra</option>
+            <option value="aluguel_equipamento" {% if item.tipo == 'aluguel_equipamento' %}selected{% endif %}>Equipamento Alugado</option>
+            <option value="servico" {% if item.tipo == 'servico' %}selected{% endif %}>Serviço Contratado</option>
+        </select>
+
+        <label for="valor_unidade">Valor por Unidade:</label>
+        <input type="number" id="valor_unidade" name="valor_unidade" step="0.01" min="0" value="{{ item.valor_unidade }}" required>
+
+        <div id="quantidade_comprada_field">
+            <label for="quantidade_comprada">Quantidade Comprada (apenas para Itens de Compra):</label>
+            <input type="number" id="quantidade_comprada" name="quantidade_comprada" min="0" value="{{ item.quantidade_comprada if item.quantidade_comprada is not none else '' }}">
+        </div>
+
+        <label for="data_compra_aluguel">Data da Compra/Início do Aluguel:</label>
+        <input type="date" id="data_compra_aluguel" name="data_compra_aluguel" value="{{ item.data_compra_aluguel.strftime('%Y-%m-%d') }}" required>
+
+        <label for="setor">Setor:</label>
+        <select id="setor" name="setor" required>
+            <option value="">Selecione o Setor</option>
+            {% for s in setores %}
+            <option value="{{ s }}" {% if item.setor == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+        </select>
+
+        {# Campos específicos para Equipamento Alugado #}
+        <div id="aluguel_equipamento_fields">
+            <label for="valor_diaria">Valor da Diária (apenas para Equipamento Alugado):</label>
+            <input type="number" id="valor_diaria" name="valor_diaria" step="0.01" min="0" value="{{ item.valor_diaria if item.valor_diaria is not none else '' }}">
+
+            <label for="data_inicio_aluguel">Data Início Aluguel (apenas para Equipamento Alugado):</label>
+            <input type="date" id="data_inicio_aluguel" name="data_inicio_aluguel" value="{{ item.data_inicio_aluguel.strftime('%Y-%m-%d') if item.data_inicio_aluguel else '' }}">
+
+            <label for="data_fim_aluguel">Data Fim Aluguel (apenas para Equipamento Alugado):</label>
+            <input type="date" id="data_fim_aluguel" name="data_fim_aluguel" value="{{ item.data_fim_aluguel.strftime('%Y-%m-%d') if item.data_fim_aluguel else '' }}">
+        </div>
+
+        <button type="submit">Salvar Alterações</button>
+        <a href="{{ url_for('detalhe_fornecedor', fornecedor_id=fornecedor.id) }}" class="button secondary">Cancelar</a>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoSelect = document.getElementById('tipo');
+            const quantidadeCompradaWrapper = document.getElementById('quantidade_comprada_field');
+            const quantidadeCompradaField = document.getElementById('quantidade_comprada');
+            const aluguelEquipamentoFields = document.getElementById('aluguel_equipamento_fields');
+            const valorDiariaField = document.getElementById('valor_diaria');
+            const dataInicioAluguelField = document.getElementById('data_inicio_aluguel');
+            const dataFimAluguelField = document.getElementById('data_fim_aluguel');
+
+            function toggleFields() {
+                const tipo = tipoSelect.value;
+                if (tipo === 'compra') {
+                    quantidadeCompradaWrapper.style.display = 'block';
+                    quantidadeCompradaField.setAttribute('required', 'required');
+
+                    aluguelEquipamentoFields.style.display = 'none';
+                    valorDiariaField.removeAttribute('required');
+                    dataInicioAluguelField.removeAttribute('required');
+                    dataFimAluguelField.removeAttribute('required');
+                    
+                    valorDiariaField.value = '';
+                    dataInicioAluguelField.value = '';
+                    dataFimAluguelField.value = '';
+                } else if (tipo === 'aluguel_equipamento') {
+                    quantidadeCompradaWrapper.style.display = 'none';
+                    quantidadeCompradaField.removeAttribute('required');
+                    quantidadeCompradaField.value = '';
+
+                    aluguelEquipamentoFields.style.display = 'block';
+                    valorDiariaField.setAttribute('required', 'required');
+                    dataInicioAluguelField.setAttribute('required', 'required');
+                } else { /* tipo === 'servico' ou vazio */
+                    quantidadeCompradaWrapper.style.display = 'none';
+                    quantidadeCompradaField.removeAttribute('required');
+                    quantidadeCompradaField.value = '';
+
+                    aluguelEquipamentoFields.style.display = 'none';
+                    valorDiariaField.removeAttribute('required');
+                    dataInicioAluguelField.removeAttribute('required');
+                    dataFimAluguelField.removeAttribute('required');
+
+                    valorDiariaField.value = '';
+                    dataInicioAluguelField.value = '';
+                    dataFimAluguelField.value = '';
+                }
+            }
+
+            tipoSelect.addEventListener('change', toggleFields);
+            toggleFields();
+        });
+    </script>
+    <style>
+        #quantidade_comprada_field,
+        #aluguel_equipamento_fields {
+            display: none;
+        }
+    </style>
+{% endblock %}

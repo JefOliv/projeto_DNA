@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Estoque - DNA Manutenção{% endblock %}
+
+{% block content %}
+    <h1>Gerenciamento de Estoque</h1>
+
+    {# As mensagens flash agora são exibidas pelo base.html, então removemos o bloco daqui. #}
+    {# Removido: {% with messages = get_flashed_messages(...) %} ... {% endwith %} #}
+
+    <hr>
+
+    <div class="form-section">
+        <h2>Adicionar/Atualizar Produto</h2>
+        <form method="post" action="{{ url_for('adicionar_produto') }}">
+            <label for="nome">Nome do Produto:</label>
+            <input type="text" id="nome" name="nome" required autocomplete="off" />
+            
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" name="quantidade" min="0" value="1" required />
+            
+            <label for="preco">Preço (R$):</label>
+            <input type="number" id="preco" name="preco" step="0.01" min="0" value="0.00" required />
+
+            <label for="estoque_minimo">Estoque Mínimo:</label>
+            <input type="number" id="estoque_minimo" name="estoque_minimo" min="0" value="5" />
+
+            <label for="fornecedor_id">Fornecedor:</label>
+            <input type="text" id="fornecedor_autocomplete" list="fornecedores-list" placeholder="Pesquisar ou Selecionar Fornecedor" autocomplete="off">
+            <datalist id="fornecedores-list">
+                {% for fornecedor in fornecedores_para_autocomplete %}
+                    <option value="{{ fornecedor.nome }}" data-id="{{ fornecedor.id }}"></option>
+                {% endfor %}
+            </datalist>
+            <input type="hidden" id="fornecedor_id" name="fornecedor_id">
+
+            <label for="ca_numero">Número do CA (Certificado de Aprovação - Opcional):</label>
+            <input type="text" id="ca_numero" name="ca_numero" />
+            
+            <button type="submit" class="button">Adicionar Produto</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <h2>Produtos em Estoque</h2>
+
+    <div class="filter-section">
+        <form method="get" action="{{ url_for('editor_produto') }}" class="filter-form">
+            <label for="filtro">Filtrar por Nome, CA ou Fornecedor:</label>
+            <input type="text" id="filtro" name="filtro" value="{{ filtro }}" placeholder="Ex: Chave, 12345, Siemens" />
+            
+            <label>
+                <input type="checkbox" name="estoque_baixo" value="true" {% if estoque_baixo_selecionado %}checked{% endif %} />
+                Mostrar apenas estoque baixo
+            </label>
+            
+            <button type="submit" class="button primary">Aplicar Filtro</button>
+        </form>
+        <a href="{{ url_for('limpar_filtro_produto') }}" class="button secondary">Limpar Filtro</a>
+    </div>
+
+    {% if produtos %}
+        <table>
+            <thead>
+                <tr>
+                    <th><a href="{{ url_for('editor_produto', sort_by='id', sort_order='asc' if current_sort_by != 'id' or current_sort_order == 'desc' else 'desc', filtro=filtro, estoque_baixo='true' if estoque_baixo_selecionado else '') }}">ID</a></th>
+                    <th><a href="{{ url_for('editor_produto', sort_by='nome', sort_order='asc' if current_sort_by != 'nome' or current_sort_order == 'desc' else 'desc', filtro=filtro, estoque_baixo='true' if estoque_baixo_selecionado else '') }}">Nome do Produto</a></th>
+                    <th><a href="{{ url_for('editor_produto', sort_by='quantidade', sort_order='asc' if current_sort_by != 'quantidade' or current_sort_order == 'desc' else 'desc', filtro=filtro, estoque_baixo='true' if estoque_baixo_selecionado else '') }}">Quantidade</a></th>
+                    <th><a href="{{ url_for('editor_produto', sort_by='preco', sort_order='asc' if current_sort_by != 'preco' or current_sort_order == 'desc' else 'desc', filtro=filtro, estoque_baixo='true' if estoque_baixo_selecionado else '') }}">Preço Unitário (R$)</a></th>
+                    <th><a href="{{ url_for('editor_produto', sort_by='estoque_minimo', sort_order='asc' if current_sort_by != 'estoque_minimo' or current_sort_order == 'desc' else 'desc', filtro=filtro, estoque_baixo='true' if estoque_baixo_selecionado else '') }}">Estoque Mínimo</a></th>
+                    <th><a href="{{ url_for('editor_produto', sort_by='fornecedor', sort_order='asc' if current_sort_by != 'fornecedor' or current_sort_order == 'desc' else 'desc', filtro=filtro, estoque_baixo='true' if estoque_baixo_selecionado else '') }}">Fornecedor</a></th>
+                    <th><a href="{{ url_for('editor_produto', sort_by='ca_numero', sort_order='asc' if current_sort_by != 'ca_numero' or current_sort_order == 'desc' else 'desc', filtro=filtro, estoque_baixo='true' if estoque_baixo_selecionado else '') }}">CA Número</a></th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in produtos %}
+                <tr {% if item.alerta_estoque_baixo %}class="alerta-estoque-baixo"{% endif %}>
+                    <td>{{ item.produto.id }}</td>
+                    <td>{{ item.produto.nome }}</td>
+                    <td>{{ item.produto.quantidade }}</td>
+                    <td>R$ {{ "%.2f"|format(item.produto.preco) }}</td>
+                    <td>{{ item.produto.estoque_minimo }}</td>
+                    <td>{{ item.produto.fornecedor.nome if item.produto.fornecedor else 'N/A' }}</td>
+                    <td>{{ item.produto.ca_numero if item.produto.ca_numero else 'N/A' }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('editar_produto_individual', id=item.produto.id) }}" class="button edit">Editar</a>
+                        <a href="{{ url_for('excluir_produto', id=item.produto.id) }}" class="button delete" onclick="return confirm('Tem certeza que deseja excluir {{ item.produto.nome }}?');">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum produto encontrado com os critérios de filtro. <a href="{{ url_for('limpar_filtro_produto') }}">Limpar Filtro</a></p>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Lógica para o autocomplete do fornecedor
+        document.addEventListener('DOMContentLoaded', function() {
+            const fornecedorAutocomplete = document.getElementById('fornecedor_autocomplete');
+            const fornecedorIdInput = document.getElementById('fornecedor_id');
+            const fornecedoresDatalist = document.getElementById('fornecedores-list');
+
+            fornecedorAutocomplete.addEventListener('input', function() {
+                const selectedOption = Array.from(fornecedoresDatalist.options).find(
+                    option => option.value === fornecedorAutocomplete.value
+                );
+                if (selectedOption) {
+                    fornecedorIdInput.value = selectedOption.dataset.id;
+                } else {
+                    fornecedorIdInput.value = ''; // Limpa o ID se o texto não corresponder a uma opção válida
+                }
+            });
+
+            // ATENÇÃO: A lógica para esconder flash messages já está no base.html
+            // Removido: flashMessages.forEach(function(message) { ... });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Calendário de Eventos - DNA Manutenção{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css' rel='stylesheet'>
+{% endblock %}
+
+{% block content %}
+    <div class="calendar-page-container">
+        <div class="calendar-sidebar">
+            <button class="button primary add-event-button" onclick="window.openAddEventModal()">
+                <i class="fas fa-plus"></i> Adicionar Evento
+            </button>
+
+            <div class="event-list-section">
+                <h2>Próximos Eventos</h2>
+                <div id="upcoming-events-list">
+                    <p class="info-message">Carregando eventos...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="calendar-main-view">
+            <div id="fullcalendar-main" style="height: 600px;"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <script>
+        const EDIT_EVENT_URL_BASE = "{{ url_for('editar_evento', id=0) }}".slice(0, -1);
+        const DELETE_EVENT_URL_BASE = "{{ url_for('deletar_evento', id=0) }}".slice(0, -1);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('fullcalendar-main');
+            const upcomingEventsList = document.getElementById('upcoming-events-list');
+
+            let calendar;
+
+            // NOVO: Ouvir o evento personalizado disparado pelo base.html após um evento ser adicionado com sucesso
+            document.addEventListener('globalAddEventSuccess', function(e) {
+                console.log('Evento globalAddEventSuccess recebido. Recarregando calendário e lista.');
+                calendar.refetchEvents(); // Recarrega os eventos no FullCalendar
+                loadUpcomingEvents(); // Recarrega a lista de próximos eventos
+            });
+            // NOVO: Ouvir evento de erro também (para fins de depuração, caso necessário)
+            document.addEventListener('globalAddEventError', function(e) {
+                console.error('Evento globalAddEventError recebido:', e.detail.message);
+                // Você pode adicionar mais lógica aqui se quiser lidar com erros de forma mais específica no calendário
+            });
+
+
+            async function loadUpcomingEvents() {
+                console.log("loadUpcomingEvents() iniciada.");
+                try {
+                    upcomingEventsList.innerHTML = '<p class="info-message">Carregando eventos...</p>';
+                    const response = await fetch('/eventos');
+                    
+                    if (!response.ok) {
+                        console.error('Falha na requisição /eventos:', response.status, response.statusText);
+                        upcomingEventsList.innerHTML = '<p class="info-message error-message">Erro ao carregar eventos.</p>';
+                        return;
+                    }
+
+                    const events = await response.json();
+
+                    console.log('Dados recebidos da API /eventos:', events);
+                    
+                    const now = new Date();
+                    console.log('Hora atual (JavaScript):', now);
+
+                    let highlightNextEvent = true; 
+                    upcomingEventsList.innerHTML = ''; 
+
+                    events.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+                    events.forEach(event => {
+                        const eventDate = new Date(event.start);
+                        console.log('Analisando evento:', event.title, 'Data do evento (JS):', eventDate);
+
+                        if (eventDate >= now || (eventDate.toDateString() === now.toDateString() && eventDate.getTime() >= now.getTime())) {
+                            console.log('Evento FUTURO encontrado:', event.title, eventDate);
+                            const eventDiv = document.createElement('div');
+                            eventDiv.classList.add('upcoming-event-item');
+                            
+                            if (highlightNextEvent) { 
+                                eventDiv.classList.add('next-event');
+                                highlightNextEvent = false;
+                            }
+
+                            const editUrl = EDIT_EVENT_URL_BASE + event.id;
+                            const deleteUrl = DELETE_EVENT_URL_BASE + event.id;
+
+                            eventDiv.innerHTML = `
+                                <strong>${event.title}</strong><br>
+                                Data: ${eventDate.toLocaleDateString('pt-BR')} ${eventDate.toLocaleTimeString('pt-BR').substring(0, 5)}<br>
+                                Local: ${event.local || 'N/A'}<br>
+                                Descrição: ${event.description || 'N/A'}
+                                <div class="event-actions">
+                                    <a href="${editUrl}" class="button edit small">Editar</a>
+                                    <button class="button delete small" data-event-id="${event.id}">Excluir</button>
+                                </div>
+                            `;
+                            upcomingEventsList.appendChild(eventDiv);
+                        } else {
+                            console.log('Evento PASSADO ou não futuro:', event.title, eventDate);
+                        }
+                    });
+
+                    if (upcomingEventsList.children.length === 0) {
+                        upcomingEventsList.innerHTML = '<p class="info-message">Nenhum evento futuro encontrado.</p>';
+                        console.log('Nenhum evento futuro foi encontrado para exibir na lista.');
+                    } else {
+                        console.log('Eventos futuros foram adicionados à lista.');
+                        document.querySelectorAll('.upcoming-event-item .button.delete').forEach(button => {
+                            button.addEventListener('click', async function() {
+                                const eventId = this.dataset.eventId;
+                                if (confirm('Tem certeza que deseja excluir este evento?')) {
+                                    try {
+                                        const response = await fetch(`/deletar_evento/${eventId}`, {
+                                            method: 'DELETE'
+                                        });
+                                        if (response.ok) {
+                                            alert('Evento excluído com sucesso!');
+                                            calendar.refetchEvents();
+                                            loadUpcomingEvents();
+                                        } else {
+                                            const errorText = await response.text();
+                                            alert('Erro ao excluir evento: ' + errorText);
+                                        }
+                                    } catch (error) {
+                                        console.error('Erro na exclusão do evento:', error);
+                                        alert('Erro na conexão ao excluir evento.');
+                                    }
+                                }
+                            });
+                        });
+                    }
+
+                } catch (error) {
+                    console.error('Erro no bloco try-catch de loadUpcomingEvents():', error);
+                    upcomingEventsList.innerHTML = '<p class="info-message error-message">Erro ao carregar eventos.</p>';
+                }
+            }
+
+            // Inicializa o FullCalendar
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'pt-br',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                buttonText: {
+                    today: 'Hoje',
+                    month: 'Mês',
+                    week: 'Semana',
+                    day: 'Dia'
+                },
+                events: '/eventos',
+                eventClick: function(info) {
+                    if (info.event.url) {
+                        window.open(info.event.url, '_blank');
+                    } else {
+                        alert('Evento: ' + info.event.title + '\nData: ' + info.event.start.toLocaleString());
+                    }
+                },
+                dateClick: function(info) {
+                    const clickedDate = info.dateStr;
+                    const now = new Date();
+                    const year = info.date.getFullYear();
+                    const month = (info.date.getMonth() + 1).toString().padStart(2, '0');
+                    const day = info.date.getDate().toString().padStart(2, '0');
+                    const hours = now.getHours().toString().padStart(2, '0');
+                    const minutes = now.getMinutes().toString().padStart(2, '0');
+                    const dateTimeForInput = `${year}-${month}-${day}T${hours}:${minutes}`;
+                    window.openAddEventModal(dateTimeForInput);
+                },
+                dayMaxEvents: 2,
+            });
+            calendar.render();
+
+            loadUpcomingEvents();
+        });
+    </script>
+{% endblock %}

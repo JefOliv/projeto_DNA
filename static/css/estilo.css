@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+#calendar {
+    flex: 3;
+    max-width: 70%;
+}
+
+.lista-eventos {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 10px;
+    max-height: 500px;
+    overflow-y: auto;
+    background: #f9f9f9;
+}
+
+.lista-eventos ul {
+    list-style: none;
+    padding: 0;
+}
+
+.lista-eventos li {
+    margin: 5px 0;
+    padding: 5px;
+    background: #e0eaff;
+    border-left: 5px solid #007BFF;
+}
+
+.topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.logo {
+    height: 50px;
+}
+
+.usuario-info {
+    font-size: 14px;
+}
+
+#calendar {
+  flex: 2;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  padding: 10px;
+  height: 600px; /* altura fixa para evitar ficar gigante */
+}

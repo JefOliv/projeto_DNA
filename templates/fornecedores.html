@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Fornecedores - DNA Manutenção{% endblock %}
+
+{% block content %}
+    <h1>Lista de Fornecedores</h1>
+
+    <p><a href="{{ url_for('adicionar_fornecedor') }}" class="button primary">Adicionar Novo Fornecedor</a></p>
+
+    <div class="filter-section">
+        <form method="get" action="{{ url_for('fornecedores') }}" class="filter-form">
+            <label for="filtro">Filtrar por Nome, Contato ou Email:</label>
+            <input type="text" id="filtro" name="filtro" value="{{ filtro }}" placeholder="Ex: Siemens, João, joao@email.com" />
+            <button type="submit" class="button primary">Aplicar Filtro</button>
+        </form>
+        <a href="{{ url_for('limpar_filtro_fornecedor') }}" class="button secondary">Limpar Filtro</a>
+    </div>
+
+    {% if fornecedores %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th><a href="{{ url_for('fornecedores', sort_by='nome', sort_order='asc' if current_sort_by != 'nome' or current_sort_order == 'desc' else 'desc', filtro=filtro) }}">Nome do Fornecedor</a></th>
+                        <th><a href="{{ url_for('fornecedores', sort_by='tipo_fornecedor', sort_order='asc' if current_sort_by != 'tipo_fornecedor' or current_sort_order == 'desc' else 'desc', filtro=filtro) }}">Tipo de Fornecedor</a></th>
+                        <th>Contato</th>
+                        <th>Telefone</th>
+                        <th>Email</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for forn in fornecedores %}
+                    <tr>
+                        <td><a href="{{ url_for('detalhe_fornecedor', fornecedor_id=forn.id) }}">{{ forn.nome }}</a></td>
+                        <td>
+                            {% if forn.tipo_fornecedor == 'compra_produtos' %}Produtos
+                            {% elif forn.tipo_fornecedor == 'locacao_equipamentos' %}Locação Equipamentos
+                            {% elif forn.tipo_fornecedor == 'servico' %}Serviços
+                            {% else %}N/A
+                            {% endif %}
+                        </td>
+                        <td>{{ forn.contato if forn.contato else 'N/A' }}</td>
+                        <td>{{ forn.telefone if forn.telefone else 'N/A' }}</td>
+                        <td>{{ forn.email if forn.email else 'N/A' }}</td>
+                        <td class="actions">
+                            <a href="{{ url_for('editar_fornecedor', id=forn.id) }}" class="button edit small">Editar</a>
+                            <a href="{{ url_for('excluir_fornecedor', id=forn.id) }}" class="button delete small" onclick="return confirm('Tem certeza que deseja excluir o fornecedor {{ forn.nome }} e todos os seus itens associados?');">Excluir</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Nenhum fornecedor encontrado com os critérios de filtro.</p>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {# Scripts específicos para esta página #}
+{% endblock %}

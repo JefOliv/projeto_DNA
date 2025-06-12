@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Funcionários - DNA Manutenção{% endblock %}
+
+{% block content %}
+    <h1>Lista de Funcionários</h1>
+
+    <p><a href="{{ url_for('adicionar_funcionario') }}" class="button primary">Adicionar Novo Funcionário</a></p>
+
+    <div class="filter-section">
+        <form method="get" action="{{ url_for('funcionarios') }}" class="filter-form">
+            <label for="filtro">Filtrar por Nome, Matrícula, Função ou Setor:</label>
+            <input type="text" id="filtro" name="filtro" value="{{ filtro }}" placeholder="Ex: João, 001, Eletricista, Civil" />
+            <button type="submit" class="button primary">Aplicar Filtro</button>
+        </form>
+        <a href="{{ url_for('limpar_filtro_funcionario') }}" class="button secondary">Limpar Filtro</a>
+    </div>
+
+    {% if funcionarios %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th><a href="{{ url_for('funcionarios', sort_by='id', sort_order='asc' if current_sort_by != 'id' or current_sort_order == 'desc' else 'desc', filtro=filtro) }}">ID</a></th>
+                        <th><a href="{{ url_for('funcionarios', sort_by='nome_completo', sort_order='asc' if current_sort_by != 'nome_completo' or current_sort_order == 'desc' else 'desc', filtro=filtro) }}">Nome Completo</a></th>
+                        <th><a href="{{ url_for('funcionarios', sort_by='matricula', sort_order='asc' if current_sort_by != 'matricula' or current_sort_order == 'desc' else 'desc', filtro=filtro) }}">Matrícula</a></th>
+                        <th><a href="{{ url_for('funcionarios', sort_by='funcao', sort_order='asc' if current_sort_by != 'funcao' or current_sort_order == 'desc' else 'desc', filtro=filtro) }}">Função</a></th>
+                        <th><a href="{{ url_for('funcionarios', sort_by='data_admissao', sort_order='asc' if current_sort_by != 'data_admissao' or current_sort_order == 'desc' else 'desc', filtro=filtro) }}">Data de Admissão</a></th>
+                        <th>Setor</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for func in funcionarios %}
+                    <tr>
+                        <td>{{ func.id }}</td>
+                        <td><a href="{{ url_for('detalhe_funcionario', id=func.id) }}">{{ func.nome_completo }}</a></td>{# <<<<<<< CORREÇÃO AQUI #}
+                        <td>{{ func.matricula }}</td>
+                        <td>{{ func.funcao }}</td>
+                        <td>{{ func.data_admissao.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ func.setor }}</td>
+                        <td class="actions">
+                            <a href="{{ url_for('detalhe_funcionario', id=func.id) }}" class="button edit small">Editar</a>
+                            <a href="{{ url_for('excluir_funcionario', id=func.id) }}" class="button delete small" onclick="return confirm('Tem certeza que deseja excluir {{ func.nome_completo }}?');">Excluir</a>{# <<<<<<< CORREÇÃO AQUI #}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Nenhum funcionário encontrado com os critérios de filtro.</p>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {# Scripts específicos para esta página #}
+{% endblock %}
